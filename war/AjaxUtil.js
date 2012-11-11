@@ -96,8 +96,7 @@ onSocketMessage = function(message) {
 
 displayFriendList =function(){
 	var txt = document.createElement("div");
-	
-	
+		
 	document.getElementById("FriendList").appendChild(txt);	
 	var getFriendListURI = 'getFriendList?userid='+ userid;
 	var httpRequest = makeRequest(getFriendListURI,false);
