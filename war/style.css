@@ -3,6 +3,9 @@
 }
 body{
 	background:black;
+	 color:white;
+ font-size:15px;
+ font-family:arial;
 }
 div{
 	border: solid 3px gray;
@@ -58,18 +61,18 @@ div{
  float:right;
  height:97%;
  text-align:left;
+ overflow:auto;
  
  }
  #FriendList div{
- border:0px;
+ border:0px; 
  }
  #FriendList a{
- 	color:#ffff46;
+ 	color:#ffee88;
  	border:0px;
- 	margin-left:3px;
- 	
+ 	margin-left:3px; 	
  	text-align:center;
- 	margin-top:5px;
+ 	margin-top:10px;
  	
  	
  

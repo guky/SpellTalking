@@ -13,7 +13,9 @@
     <script src='/_ah/channel/jsapi'></script>
     <script language="javascript" src='AjaxUtil.js'></script>
 	<script language="javascript" src='jquery-1.8.2.min.js'></script>
+	<!--[if (!IE)]><!-->
 	<link type="text/css" rel="stylesheet" href="style.css" />
+	<!--<![endif]-->
 	<script language="javascript" type="text/javascript" src="tiny_mce/tiny_mce.js"></script>
 
 	

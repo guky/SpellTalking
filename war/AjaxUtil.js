@@ -138,7 +138,7 @@ addToFriends = function(friend){
 	}
 	if(!contains){
 		friendsList.push(friend);
-		var a = "<a id='"+friend+"'>"+friend+"</a>";
+		var a = "<a id='"+friend+"'><b>"+friend+"</b></a>";
 		var txt = document.createElement("div");
 		txt.innerHTML = a;
 		txt.style.cursor="pointer";
@@ -186,7 +186,7 @@ sendMessage = function(){
 		});
 	var mesgDiv = document.createElement("a");
 
-	mesgDiv.innerHTML ="<b>"+dateFormat()+" - me</b>:  "+ message+"<br />";
+	mesgDiv.innerHTML ="<b style='color:#9955dd'>"+dateFormat()+" - me</b>:  "+ message+"<br />";
 	var abc = document.getElementById("messageCont");
 	if(abc){
 		abc.appendChild(mesgDiv);}
