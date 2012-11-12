@@ -182,7 +182,9 @@ sendMessage = function(){
 		alert("error");}
 	//tinyMCE.get('messageBox').setContent('');
 	document.getElementById("messageBox").value = '';
-	
+		var elem = $('#messageCont');
+	   	//alert("scrolling");
+	    elem.scrollTop(elem[0].scrollHeight);
 }
 
 updateChatBox = function(message,from){
@@ -191,11 +193,20 @@ updateChatBox = function(message,from){
 	if(from!=userid){
 	mesgDiv.innerHTML ="<b>"+from+"</b>:  "+ message+"<br />";
 	var abc = document.getElementById("messageCont");
-	if(abc)
+	if(abc){
 		abc.appendChild(mesgDiv);	
 		//abc.value = abc.value + message;
-	
-	else
+ 
+	}
+
+	   
+	   
+	    			
+	    
+	}else{
 		alert("error");
 }
+	  var elem = $('#messageCont');
+	   	alert("scrolling");
+	    elem.scrollTop(elem[0].scrollHeight - elem.height());
 };
