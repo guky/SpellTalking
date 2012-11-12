@@ -20,7 +20,13 @@
   </head>
 
   <body>
-    <h1>Hello App Engine!</h1>
+
+    
+       
+      	
+        <div id ='FriendList'><div></div></div>
+        <div id = "messageCont"><div></div>
+            <h1>Hello App Engine!</h1>
 <% UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		String navBar;
@@ -35,11 +41,7 @@
 		
 		out.println(navBar);
 		%>	
-    
-       
-      	<div id="login_Info"></div>
-        <div id ='FriendList'><div>FriendList</div></div>
-        <div id = "messageCont"><div>Messages:</div></div>
+        </div>
       
       
        <div style="font-weight:bold;"><textarea id='messageBox' onkeydown="if(event.keyCode == 13){sendMessage()}"></textarea></div>

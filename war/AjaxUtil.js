@@ -22,7 +22,7 @@ function makeRequest(url,async) {
 	}
 
 	if (!httpRequest) {
-		alert('Giving up :( Cannot create an XMLHTTP instance');
+		console.debug('Giving up :( Cannot create an XMLHTTP instance');
 		return false;
 	}
 	httpRequest.open('POST', url,async);
@@ -35,9 +35,9 @@ function init(){
 	//document.getElementById("initLoginBtn").onclick = showLoginPage;
 	//document.getElementById("loginBtn").onclick = loginUser;
 	userid = document.getElementById("userid").innerHTML;	
-	//alert(userid);
+	//console.debug(userid);
 	requestToken();
-	//alert("tokenOpen");
+	//console.debug("tokenOpen");
 	
 }
 
@@ -45,14 +45,14 @@ function init(){
 
 
 requestToken = function(){
-	var getTokenURI = '/gettoken';
+	var getTokenURI = '/gettoken?forced=false';
 	$.ajax({
 		  type: "POST",
 		  url: getTokenURI,
 		  //data: { name: "John", location: "Boston" 
 			
 		}).done(function( msg ) {
-			//alert(msg);
+			//console.debug(msg);
 		  openChannel(msg);
 		  displayFriendList();
 		});
@@ -68,7 +68,18 @@ openChannel = function(token) {
 };
 
 onSocketError = function(error){
-	alert("Error is <br/>"+error.description+" <br /> and HTML code"+error.code);
+	console.debug("Error is <br/>"+error.description+" <br /> and HTML code"+error.code);
+	var getTokenURI = '/gettoken?forced=true';
+	$.ajax({
+		  type: "POST",
+		  url: getTokenURI,
+		  //data: { name: "John", location: "Boston" 
+			
+		}).done(function( msg ) {
+			//console.debug(msg);
+		  openChannel(msg);
+		  displayFriendList();
+		});
 };
 
 onSocketOpen = function() {
@@ -76,7 +87,7 @@ onSocketOpen = function() {
 };
 
 onSocketClose = function() {
-	alert("Socket Connection closed");
+	console.debug("Socket Connection closed");
 };
 
 onSocketMessage = function(message) {
@@ -84,7 +95,7 @@ onSocketMessage = function(message) {
 	var messageXML =  ((new DOMParser()).parseFromString(message.data, "text/xml"));
 	
 	var messageType = messageXML.documentElement.getElementsByTagName("type")[0].firstChild.nodeValue;
-	//alert(messageType);
+	//console.debug(messageType);
 	if(messageType == "updateFriendList"){
 		addToFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue);
 	}else if(messageType == "updateChatBox"){
@@ -107,7 +118,7 @@ displayFriendList =function(){
 			}
 			
 		}else {
-			alert('There was a problem with the request.');
+			console.debug('There was a problem with the request.');
 		}
 	}
 };
@@ -174,16 +185,17 @@ sendMessage = function(){
 		
 		});
 	var mesgDiv = document.createElement("a");
-	mesgDiv.innerHTML ="<b>me</b>:  "+ message+"<br />";
+
+	mesgDiv.innerHTML ="<b>"+dateFormat()+" - me</b>:  "+ message+"<br />";
 	var abc = document.getElementById("messageCont");
 	if(abc){
 		abc.appendChild(mesgDiv);}
 	else{
-		alert("error");}
+		console.debug("error");}
 	//tinyMCE.get('messageBox').setContent('');
 	document.getElementById("messageBox").value = '';
 		var elem = $('#messageCont');
-	   	//alert("scrolling");
+	   	//console.debug("scrolling");
 	    elem.scrollTop(elem[0].scrollHeight);
 }
 
@@ -191,7 +203,7 @@ updateChatBox = function(message,from){
 	
 	var mesgDiv = document.createElement("a");
 	if(from!=userid){
-	mesgDiv.innerHTML ="<b>"+from+"</b>:  "+ message+"<br />";
+	mesgDiv.innerHTML ="<b>"+dateFormat()+' - '+from+"</b>:  "+ message+"<br />";
 	var abc = document.getElementById("messageCont");
 	if(abc){
 		abc.appendChild(mesgDiv);	
@@ -204,9 +216,33 @@ updateChatBox = function(message,from){
 	    			
 	    
 	}else{
-		alert("error");
+		console.debug("error");
 }
 	  var elem = $('#messageCont');
-	   	alert("scrolling");
-	    elem.scrollTop(elem[0].scrollHeight - elem.height());
+	   //	console.debug("scrolling");
+	    elem.scrollTop(elem[0].scrollHeight);
 };
+function dateFormat(){
+	var today=new Date();
+	var h=today.getHours();
+	var m=today.getMinutes();
+	var s=today.getSeconds();
+	if(h < 10 || 0){
+		var strH = '0'+h;
+	}else{
+		var strH = h;
+	}
+	if(m < 10 || 0){
+		var strM = '0'+m;
+	}else{
+		var strM = m;
+	}
+	if(s < 10 || 0){
+		var strS = '0'+s;		
+	}else{
+		strS = s;
+	}
+	return strH+":"+strM+":"+strS;
+	
+	
+}

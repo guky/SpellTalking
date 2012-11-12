@@ -1,7 +1,13 @@
 #loginPage,#chatMessagesPage,#friendsListPage{
 	display:none;
 }
-
+body{
+	background:black;
+}
+div{
+	border: solid 3px gray;
+	
+}
 .chatbox{
   border:1px solid #bbb;
   width:230px;
@@ -31,12 +37,52 @@
  }
  #messageCont{
   padding-left:5px;
-  height:225px;
-  overflow:scroll; 
+  height:97%;
+  width:86.9%;
+  overflow:auto; 
+  float:left;
+  color:white;
+  
+ }
+ #messageCont a{
+ color:white;
+ font-size:15px;
+ font-family:arial;
+ }
+  #messageCont b{
+ color:#66cccc;
+ 
+ }
+ #FriendList{
+ width:12%;
+ float:right;
+ height:97%;
+ text-align:left;
+ 
+ }
+ #FriendList div{
+ border:0px;
+ }
+ #FriendList a{
+ 	color:#ffff46;
+ 	border:0px;
+ 	margin-left:3px;
+ 	
+ 	text-align:center;
+ 	margin-top:5px;
+ 	
+ 	
+ 
  }
  #messageCont p {
  	padding : 0 0 0 0;
  	margin : 0 0 0 0 ;
+ 
+ }
+  #messageCont div {
+ 	padding : 0 0 0 0;
+ 	margin : 0 0 0 0 ;
+ 	border: 0px;
  
  }
  
@@ -53,4 +99,8 @@
   padding:4px;
   background:#357EC7;
    color:#fff;
+ }
+ #messageBox{
+ width:100%;
+ height:20px;
  }

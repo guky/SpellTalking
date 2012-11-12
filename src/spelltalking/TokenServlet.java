@@ -71,7 +71,8 @@ public class TokenServlet extends HttpServlet {
     	System.out.println(chatUser.getTokenDate());
     	System.out.println(new Date());
     	System.out.println((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60));
-    	if(((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60)) > 2){
+    	String forced = request.getParameter("forced");
+    	if((((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60)) > 2) || forced.equals("true")){
     		token = createChannel(user.getEmail());
     		chatUser.setToken(token);
     		chatUser.setTokenDate(new Date());
