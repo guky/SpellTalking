@@ -216,7 +216,7 @@ updateChatBox = function(message,from){
 	    			
 	    
 	}else{
-		console.debug("error");
+		//console.debug("error");
 }
 	  var elem = $('#messageCont');
 	   //	console.debug("scrolling");
