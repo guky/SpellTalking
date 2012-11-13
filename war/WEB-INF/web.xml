@@ -20,7 +20,7 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 	
-<servlet>
+	<servlet>
        <servlet-name>MessageServlet</servlet-name>
        <servlet-class>spelltalking.MessageServlet</servlet-class>
     </servlet>
@@ -36,7 +36,17 @@
     <servlet-mapping>
        <servlet-name>FriendServlet</servlet-name>
        <url-pattern>/getFriendList/*</url-pattern>
-    </servlet-mapping>	
+    </servlet-mapping>
+    <servlet>
+       <servlet-name>ConnectionHandlerServelet</servlet-name>
+       <servlet-class>spelltalking.ConnectionHandlerServelet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+       <servlet-name>ConnectionHandlerServelet</servlet-name>
+       <url-pattern>/_ah/channel/connected/</url-pattern>
+       <url-pattern>/_ah/channel/disconnected/ </url-pattern>
+    </servlet-mapping>
+    	
  <servlet>
   <servlet-name>SystemServiceServlet</servlet-name>
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>

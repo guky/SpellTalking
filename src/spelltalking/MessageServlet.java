@@ -54,7 +54,7 @@ public class MessageServlet extends HttpServlet {
     while(friendList.hasNext()){
     	String user = friendList.next() ;
     if (user != null && !user.equals("") && message != null
-        && !message.equals("")) {
+        && !message.equals("") && friendStore.getFriends().get(user).isConnected()) {
       try{
       	String outputMessage ="<data>" +
 		  "<type>updateChatBox</type>" +

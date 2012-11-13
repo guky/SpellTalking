@@ -6,6 +6,15 @@ public class ChatUser {
 	private String Email;
 	private String Token;
 	private Date TokenDate;
+	private boolean Connected = false;
+	public boolean isConnected() {		
+		return Connected;		
+	}
+	public void setConnected(boolean connected) {
+		
+		Connected = connected;
+	
+	}
 	public String getEmail() {
 		return Email;
 	}

@@ -80,5 +80,5 @@ public class FriendStore {
   HashMap<String,ChatUser> getFriends(){
     logger.log(Level.INFO,"Users sorted and the set returned");
     return new HashMap<String,ChatUser>(friendsList);
-  }
+  }  
 }

@@ -82,11 +82,11 @@ public class FriendServlet extends HttpServlet {
     for (String name : friendNames){
     	ChatUser friend = friendList.get(name);
     	  System.out.println("Debug: user  "+name);
-      if(!friend.getEmail().equals(user)){
+      if(!friend.getEmail().equals(user) && friend.isConnected()){
         outputTxt +="<friend><name>" + friend.getEmail() +"</name></friend>\n";
         channelService.sendMessage(
   		  new ChannelMessage(friend.getEmail(),"<data>" +
-  			"<type>updateFriendList</type>" +
+  			"<type>addToFriendList</type>" +
   			"<message>"+user+"</message>" +
   			"<from>Server</from>" +	"</data>"));
   	  }

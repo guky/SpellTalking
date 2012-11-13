@@ -37,6 +37,7 @@ function init(){
 	userid = document.getElementById("userid").innerHTML;	
 	//console.debug(userid);
 	requestToken();
+	 
 	//console.debug("tokenOpen");
 	
 }
@@ -77,8 +78,7 @@ onSocketError = function(error){
 			
 		}).done(function( msg ) {
 			//console.debug(msg);
-		  openChannel(msg);
-		  displayFriendList();
+		  openChannel(msg);		 
 		});
 };
 
@@ -96,16 +96,19 @@ onSocketMessage = function(message) {
 	
 	var messageType = messageXML.documentElement.getElementsByTagName("type")[0].firstChild.nodeValue;
 	//console.debug(messageType);
-	if(messageType == "updateFriendList"){
+	if(messageType == "addToFriendList"){
 		addToFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue);
 	}else if(messageType == "updateChatBox"){
 		var friend = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;		
 		updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend);
+	}else if(messageType == "removeFromFriendList"){
+		removeFromFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue);
 	}
 };
 
 
 displayFriendList =function(){
+	console.debug("List requested");
 	var txt = document.createElement("div");		
 	document.getElementById("FriendList").appendChild(txt);	
 	var getFriendListURI = 'getFriendList?userid='+ userid;
@@ -129,6 +132,7 @@ var friendsList= new Array();
 
 addToFriends = function(friend){
 	//check if the user already added
+	console.debug("Friend add called");
 	var contains = false;
 	for(var i = 0 ; i < friendsList.length ; i++){
 		if(friendsList[i]==friend){
@@ -136,7 +140,7 @@ addToFriends = function(friend){
 			break;
 		}
 	}
-	if(!contains){
+	if(!contains){		
 		friendsList.push(friend);
 		var a = "<a id='"+friend+"'><b>"+friend+"</b></a>";
 		var txt = document.createElement("div");
@@ -153,6 +157,28 @@ addToFriends = function(friend){
 
 
 
+		//document.getElementById("chatMessagesPage").appendChild(chatBox);
+		//recievers[recievers.lenght] = friend;
+	}
+};
+removeFromFriends = function(friend){
+	//check if the user already added
+	console.debug("Friend remove called");
+	var contains = false;
+	var index = -1;
+	for(var i = 0 ; i < friendsList.length ; i++){
+		if(friendsList[i]==friend){
+			console.debug("friendsList["+i+"]: "+friendsList[i]);
+			contains=true;
+			break;
+		}
+	}
+	console.debug("contains: "+contains);
+	if(contains){
+		contains
+		console.debug("index: "+index);
+		friendsList.splice(index,1);
+		document.getElementById("FriendList").removeChild(document.getElementById(friend).parentNode);
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
 		//recievers[recievers.lenght] = friend;
 	}
