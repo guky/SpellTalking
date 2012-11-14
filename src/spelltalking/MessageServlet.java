@@ -28,6 +28,8 @@ import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 
+import entities.FriendStore;
+
 /**
  * This servlet is responsible for sending messages across the channel.
  * 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spelltalking;
+package entities;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +22,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import spelltalking.FriendServlet;
+
 
 /**
  * 
@@ -57,7 +60,7 @@ public class FriendStore {
 	 * 
 	 * @param user The user to be added in the set 
 	 */
-  void addNewFriend(ChatUser user){
+  public void addNewFriend(ChatUser user){
     logger.log(Level.INFO,"User {0} is added to the list",user);
     friendsList.put(user.getEmail(),user);
   }
@@ -77,7 +80,7 @@ public class FriendStore {
 	 * 
 	 * @return The TreeSet object of users (String)
 	 */
-  HashMap<String,ChatUser> getFriends(){
+  public HashMap<String,ChatUser> getFriends(){
     logger.log(Level.INFO,"Users sorted and the set returned");
     return new HashMap<String,ChatUser>(friendsList);
   }  

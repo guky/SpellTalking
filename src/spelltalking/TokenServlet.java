@@ -17,7 +17,6 @@ package spelltalking;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +31,9 @@ import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+
+import entities.ChatUser;
+
 
 /**
  * This servlet creates the channel with the server and gets the token.
@@ -52,22 +54,18 @@ public class TokenServlet extends HttpServlet {
 	  throws ServletException, IOException {
 	  UserService userService = UserServiceFactory.getUserService();
 	String token = "";  
-	User user = userService.getCurrentUser();
-	FriendStore friendStore = FriendStore.getInstance();
-	ChatUser chatUser;
-	 HashMap<String,ChatUser>friendList = friendStore.getFriends();
-    if (user != null && !"".equals(user.getEmail()) && !friendList.containsKey(user.getEmail())) {
+	User user = userService.getCurrentUser();	
+	ChatUser chatUser = ChatUser.getUserbyEmail(user.getEmail());	
+    if (user != null && !"".equals(user.getEmail()) && chatUser == null) {
     	token = createChannel(user.getEmail());
     	chatUser = new ChatUser();
     	chatUser.setEmail(user.getEmail());
     	chatUser.setToken(token);
     	chatUser.setTokenDate(new Date());    	
-    	friendStore.addNewFriend(chatUser);
-    	 System.out.println("Token done for "+user+" New Token = " +token);
+    	ChatUser.save(chatUser);
+    	System.out.println("Token done for "+user+" New Token = " +token);
       writeIntoChannel(response,token);
-    }else if(friendList.containsKey(user.getEmail())){
-    	chatUser = friendList.get(user.getEmail());
-    	
+    }else if(chatUser != null){   
     	System.out.println(chatUser.getTokenDate());
     	System.out.println(new Date());
     	System.out.println((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60));

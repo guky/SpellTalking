@@ -34,6 +34,9 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import entities.ChatUser;
+import entities.FriendStore;
+
 /**
  * FriendServlet  adds the new logged in user if the user is not logged in already
  * Gives the list of users online 

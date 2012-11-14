@@ -14,6 +14,9 @@ import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 
+import entities.ChatUser;
+import entities.FriendStore;
+
 @SuppressWarnings("serial")
 public class ConnectionHandlerServelet extends HttpServlet {
 
