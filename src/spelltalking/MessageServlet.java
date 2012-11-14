@@ -47,7 +47,7 @@ public class MessageServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
   throws ServletException, IOException {
     String message = request.getParameter("message");
-    String users[] = request.getParameter("to").split(":");
+   // String users[] = request.getParameter("to").split(":");
     String from = request.getParameter("from");
     FriendStore friendStore = FriendStore.getInstance();
     Iterator<String> friendList = friendStore.getFriends().keySet().iterator();

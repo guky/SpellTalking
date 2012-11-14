@@ -25,7 +25,9 @@
 
     
        
-      	
+      	<audio id="msg_sound" preload>
+    	<source src="msg.wav" />
+		</audio>
         <div id ='FriendList'><div></div></div>
         <div id = "messageCont"><div></div>
             <h1>Hello App Engine!</h1>

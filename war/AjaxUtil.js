@@ -1,7 +1,16 @@
 var userid;
 var recievers;
 window.onload= init;
+var sound = new Audio("msg.wav");
+sound.setAttribute('type', 'audio/mp3');
+sound.preload = 'auto';
+sound.load();
 
+function playSound(volume) {
+  var click=sound;
+  click.volume = volume;
+  click.play();
+}
 //general ajax function for all requests 
 function makeRequest(url,async) {
 	var httpRequest;
@@ -148,7 +157,7 @@ addToFriends = function(friend){
 		txt.style.cursor="pointer";
 		txt.setAttribute("onclick","openChat(\""+friend+"\");");
 		document.getElementById("FriendList").appendChild(txt);
-
+		addSystemMessage(friend+" joined");
 		
 		
 
@@ -179,6 +188,7 @@ removeFromFriends = function(friend){
 		console.debug("index: "+index);
 		friendsList.splice(index,1);
 		document.getElementById("FriendList").removeChild(document.getElementById(friend).parentNode);
+		addSystemMessage(friend+" left");
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
 		//recievers[recievers.lenght] = friend;
 	}
@@ -212,7 +222,7 @@ sendMessage = function(){
 		});
 	var mesgDiv = document.createElement("a");
 
-	mesgDiv.innerHTML ="<b style='color:#9955dd'>"+dateFormat()+" - me</b>:  "+ message+"<br />";
+	mesgDiv.innerHTML ="<b class='selfMessage'>"+dateFormat()+" - me</b>:  "+ message+"<br />";
 	var abc = document.getElementById("messageCont");
 	if(abc){
 		abc.appendChild(mesgDiv);}
@@ -226,27 +236,25 @@ sendMessage = function(){
 }
 
 updateChatBox = function(message,from){
-	
+	playSound(1);
 	var mesgDiv = document.createElement("a");
 	if(from!=userid){
-	mesgDiv.innerHTML ="<b>"+dateFormat()+' - '+from+"</b>:  "+ message+"<br />";
-	var abc = document.getElementById("messageCont");
-	if(abc){
-		abc.appendChild(mesgDiv);	
-		//abc.value = abc.value + message;
- 
-	}
-
-	   
-	   
-	    			
-	    
-	}else{
-		//console.debug("error");
-}
+	mesgDiv.innerHTML ="<b class='userColor'>"+dateFormat()+' - '+from+"</b>:  "+ message+"<br />";
+	var abc = document.getElementById("messageCont");	
+		abc.appendChild(mesgDiv);
 	  var elem = $('#messageCont');
-	   //	console.debug("scrolling");
-	    elem.scrollTop(elem[0].scrollHeight);
+	  elem.scrollTop(elem[0].scrollHeight);
+	}  
+};
+addSystemMessage = function(message){
+	playSound(1);
+	var mesgDiv = document.createElement("a");
+	mesgDiv.innerHTML ="<b class='system'>&laquo;"+dateFormat()+" - System &raquo;:  "+ message+"</b><br />";
+	var abc = document.getElementById("messageCont");
+	abc.appendChild(mesgDiv);
+	var elem = $('#messageCont');
+	console.debug("scrolling");
+	elem.scrollTop(elem[0].scrollHeight);
 };
 function dateFormat(){
 	var today=new Date();

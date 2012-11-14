@@ -47,14 +47,21 @@ div{
   color:white;
   
  }
+ .system{
+ color: #cc9900; 
+ }
  #messageCont a{
  color:white;
  font-size:15px;
  font-family:arial;
  }
-  #messageCont b{
+  .userColor{
  color:#66cccc;
  
+ }
+ .selfMessage{
+ 
+ color:#9955dd;
  }
  #FriendList{
  width:12%;
