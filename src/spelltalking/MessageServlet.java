@@ -16,7 +16,10 @@
 package spelltalking;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -27,8 +30,14 @@ import com.google.appengine.api.channel.ChannelFailureException;
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
-import entities.FriendStore;
+import entities.ChatMessage;
+import entities.ChatUser;
+
 
 /**
  * This servlet is responsible for sending messages across the channel.
@@ -48,25 +57,36 @@ public class MessageServlet extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
   throws ServletException, IOException {
+	 SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss Z");
+	int action = new Integer(request.getParameter("action")).intValue();
+	switch(action){
+	case 1:UserService userService = UserServiceFactory.getUserService();
+	User userAcc = userService.getCurrentUser();		    
     String message = request.getParameter("message");
+    System.out.println("message got"+message);
    // String users[] = request.getParameter("to").split(":");
     String from = request.getParameter("from");
-    FriendStore friendStore = FriendStore.getInstance();
-    Iterator<String> friendList = friendStore.getFriends().keySet().iterator();
-    while(friendList.hasNext()){
-    	String user = friendList.next() ;
-    if (user != null && !user.equals("") && message != null
-        && !message.equals("") && friendStore.getFriends().get(user).isConnected()) {
+	ChatMessage	chatMessage = new ChatMessage();
+  	chatMessage.setEmail(userAcc.getEmail());
+  	chatMessage.setMessageText(new Text(message));
+  	chatMessage.setMessageDate(new Date());
+  	chatMessage.save();   
+  	
+    List<ChatUser> friendList = ChatUser.getConnectedUsers();
+    for(ChatUser user : friendList){
+    	
+    if (user.getEmail() != null && !user.getEmail().equals("") && message != null
+        && !message.equals("") && user.isConnected()) {
       try{
       	String outputMessage ="<data>" +
 		  "<type>updateChatBox</type>" +
 		  "<message>"+message+"</message>" +
 		  "<from>"+from+"</from>" +
-		  "</data>"; 
-      		
+		  "<date>"+fromat.format(new Date())+"</date>" +
+		  "</data>";       
         logger.log(Level.INFO,"sending message  into the channel");
         System.out.println("Sending message to "+user +" Message: " + outputMessage);
-      	sendMessageToChannel(user, outputMessage);
+      	sendMessageToChannel(user.getEmail(), outputMessage);
       } catch (ChannelFailureException channelFailure) {
       	logger.log(Level.WARNING, "Failed in sending message to channel");
       	System.out.println("Sending message to "+user +"ChannelErrror");
@@ -78,6 +98,24 @@ public class MessageServlet extends HttpServlet {
       }
     }
     }
+    break;
+	case 2:
+	
+	List<ChatMessage>chatMessageList = ChatMessage.getMessadges();
+	String responseText = "<data>";
+	for(ChatMessage cm : chatMessageList){
+		responseText +="<message>" +
+				  "<color>updateChatBox</color>" +
+				  "<date>"+fromat.format(cm.getMessageDate())+"</date>" +
+				  "<messageText>"+cm.getMessageText().getValue()+"</messageText>" +
+				  "<from>"+cm.getEmail()+"</from>" +
+				  "</message>";
+		
+	}
+	responseText += "</data>";
+	response.getWriter().print(responseText);
+	break;
+	}
   }
 
   /**

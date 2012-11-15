@@ -1,7 +1,10 @@
 package spelltalking;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -16,7 +19,7 @@ import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 
-import entities.FriendStore;
+
 
 
 @SuppressWarnings("serial")
@@ -24,45 +27,46 @@ public class ConnectionHandlerServelet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss Z");
 		ChannelService channelService = ChannelServiceFactory
 				.getChannelService();
 		ChannelPresence presence = channelService.parsePresence(request);
-		String user = presence.clientId();
-		HashMap<String, ChatUser> friendList = FriendStore.getInstance()
-				.getFriends();
-		Set<String> friendNames = friendList.keySet();
+		String user = presence.clientId();		
+		List<ChatUser> friendList = ChatUser.getConnectedUsers();
+		ChatUser chatUser = ChatUser.getUserbyEmail(user);
 		if (presence.isConnected()) {
 			System.out.println("Client has connected: " + user);
-			if (friendList.containsKey(user)) {
-				friendList.get(user).setConnected(true);
-
+			if(chatUser !=null){
+			chatUser.setConnected(true);
+			chatUser.save();
 			}
-			for (String name : friendNames) {
-				ChatUser friend = friendList.get(name);
-				System.out.println("Debug: user  " + name);
+			for (ChatUser friend : friendList) {
+				
+				System.out.println("Debug: user  " + friend.getEmail());
 				if (!friend.getEmail().equals(user) && friend.isConnected()) {
 					channelService.sendMessage(new ChannelMessage(friend
 							.getEmail(), "<data>"
 							+ "<type>addToFriendList</type>" + "<message>"
 							+ user + "</message>" + "<from>Server</from>"
+							+"<date>"+fromat.format(new Date())+"</date>"
 							+ "</data>"));
 				}
 			}
 		} else {
 			System.out.println("Client has disconnected: " + user);
-			if (friendList.containsKey(user)) {
-				friendList.get(user).setConnected(false);
-				for (String name : friendNames) {
-					ChatUser friend = friendList.get(name);
-					System.out.println("Debug: user  " + name);
-					if (!friend.getEmail().equals(user) && friend.isConnected()) {
-						channelService.sendMessage(new ChannelMessage(friend
-								.getEmail(), "<data>"
-								+ "<type>removeFromFriendList</type>" + "<message>"
-								+ user + "</message>" + "<from>Server</from>"
-								+ "</data>"));
-					}
+			if (chatUser != null) {
+				chatUser.setConnected(false);
+				chatUser.save();				
+			}
+			for (ChatUser friend : friendList) {
+				
+				System.out.println("Debug: user  " + friend.getEmail());
+				if (!friend.getEmail().equals(user) && friend.isConnected()) {
+					channelService.sendMessage(new ChannelMessage(friend
+							.getEmail(), "<data>"
+							+ "<type>removeFromFriendList</type>" + "<message>"
+							+ user + "</message>" + "<from>Server</from>"
+							+ "<date>"+fromat.format(new Date())+"</date>" +"</data>"));
 				}
 			}
 		}

@@ -3,42 +3,36 @@ package entities;
 import java.util.Date;
 import java.util.List;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
+import javax.persistence.Query;
 
-
-
-
+import org.datanucleus.api.jpa.annotations.Extension;
 
 import utils.EMF;
-
-
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceException;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 
 
 @Entity(name = "ChatUser")
 public class ChatUser {
 	@Id
-	private String Email;	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Extension(vendorName = "datanucleus",
+	key = "gae.encoded-pk",
+	value = "true")
+	private String id;	
 	@Basic
+	private String Email;
 	private String Token;	
 	private Date TokenDate;	
 	private boolean Connected = false;
-	
+	private String nickName;
 	public boolean isConnected() {		
 		return Connected;		
 	}
@@ -63,48 +57,55 @@ public class ChatUser {
 	public void setTokenDate(Date tokenDate) {
 		TokenDate = tokenDate;
 	}	
-	public static void save(ChatUser chatUser) {
+	public String getNickName() {
+		return nickName;
+	}
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+	public  void save() {
+		System.out.println("trying to save"+this.getEmail());
 		EntityManager em = EMF.get().createEntityManager();
 		try {
-			em.persist(chatUser);
+			em.persist(this);
 		}
 		catch(EntityExistsException e){
-			em.merge(chatUser);
+			em.merge(this);
 		}
 		finally {
 			em.close();
 		}
 	}
 	@SuppressWarnings("unchecked")
-//	public static List<ChatUser> getConnectedUsers() {	
-//		System.out.println("Save called");
-//		//PersistenceManager pm = PMF.get().getPersistenceManager();
-//		Query q = pm.newQuery("select from ChatUser " +
-//                "where Connected == connectedParam " +
-//                "parameters boolean connectedParam");
-//
-//		List<ChatUser> results;
-//
-//		try {
-//		results = (List<ChatUser>) q.execute(true);
-//		System.out.println("Save done");
-//		 return results;
-//		} finally {
-//		  q.closeAll();
-//		}
-//	}
-	
-public static ChatUser getUserbyEmail(String Email) {		
+	public static List<ChatUser> getConnectedUsers() {	
 		EntityManager em = EMF.get().createEntityManager();
-		ChatUser chatUser = null;
-		try {
-			chatUser = em.find(ChatUser.class, Email);
-			return chatUser;
+		Query query = em.createQuery("SELECT c FROM ChatUser c where Connected = true");
+		
+		try{
+		
+		List<ChatUser> results = (List<ChatUser>) query.getResultList();
+		System.out.println("result size:" + results.size());
+		 return results;
 		} finally {
 			em.close();
-		
 		}
+	}
+	
+public static ChatUser getUserbyEmail(String Email) {
+	EntityManager em = EMF.get().createEntityManager();
+	Query query = em.createQuery("SELECT c FROM ChatUser c where Email = :email_id");
+	query.setParameter(1, Email);
+	try{
+	
+	ChatUser results =  (ChatUser) query.getSingleResult();
+	
+	 return results;
+	} finally {
+		em.close();
+	}
 		
 	}
+
+
 	
 }

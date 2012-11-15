@@ -46,7 +46,7 @@ function init(){
 	userid = document.getElementById("userid").innerHTML;	
 	//console.debug(userid);
 	requestToken();
-	 
+	getHistory();
 	//console.debug("tokenOpen");
 	
 }
@@ -65,10 +65,12 @@ requestToken = function(){
 			//console.debug(msg);
 		  openChannel(msg);
 		  displayFriendList();
+		 
 		});
 };
 
 openChannel = function(token) {
+	console.debug("Open Channel started");
 	var channel = new goog.appengine.Channel(token);
 	var socket = channel.open();
 	socket.onopen = onSocketOpen;
@@ -79,6 +81,7 @@ openChannel = function(token) {
 
 onSocketError = function(error){
 	console.debug("Error is <br/>"+error.description+" <br /> and HTML code"+error.code);
+	addSystemMessage("Error: "+error.description+" Code: "+error.code);
 	var getTokenURI = '/gettoken?forced=true';
 	$.ajax({
 		  type: "POST",
@@ -92,11 +95,12 @@ onSocketError = function(error){
 };
 
 onSocketOpen = function() {
+	addSystemMessage("Socket is open");
 	// socket opened
 };
 
 onSocketClose = function() {
-	console.debug("Socket Connection closed");
+	addSystemMessage("Socket Connection closed");
 };
 
 onSocketMessage = function(message) {
@@ -106,12 +110,12 @@ onSocketMessage = function(message) {
 	var messageType = messageXML.documentElement.getElementsByTagName("type")[0].firstChild.nodeValue;
 	//console.debug(messageType);
 	if(messageType == "addToFriendList"){
-		addToFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue);
+		addToFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
 	}else if(messageType == "updateChatBox"){
 		var friend = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;		
-		updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend);
+		updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
 	}else if(messageType == "removeFromFriendList"){
-		removeFromFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue);
+		removeFromFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
 	}
 };
 
@@ -210,7 +214,7 @@ sendMessage = function(){
 	console.debug(message);
 	message = message.split('<').join('lt').split('>').join('gt');
 	console.debug(message);
-	var sendMessageURI = '/message?message=' + message + '&to=test2@example.com' + '&from='+userid ;
+	var sendMessageURI = '/message?action=1&message=' + message + '&to=test2@example.com' + '&from='+userid ;
 	$.ajax({
 		  type: "POST",
 		  url: sendMessageURI,
@@ -220,36 +224,70 @@ sendMessage = function(){
 			
 		
 		});
-	var mesgDiv = document.createElement("a");
 
-	mesgDiv.innerHTML ="<b class='selfMessage'>"+dateFormat()+" - me</b>:  "+ message+"<br />";
-	var abc = document.getElementById("messageCont");
-	if(abc){
-		abc.appendChild(mesgDiv);}
-	else{
-		console.debug("error");}
-	//tinyMCE.get('messageBox').setContent('');
 	document.getElementById("messageBox").value = '';
-		var elem = $('#messageCont');
-	   	//console.debug("scrolling");
-	    elem.scrollTop(elem[0].scrollHeight);
+		
 }
-
-updateChatBox = function(message,from){
+getHistory = function(){
+	
+	
+	console.debug("History");
+	var sendMessageURI = '/message?action=2';
+	$.ajax({
+		  type: "POST",
+		  url: sendMessageURI
+		//  data: { message: message}
+			
+		}).done(function( msg ) {
+			console.debug("Done History fetch");
+			msg
+			console.debug(msg);
+			var from;
+			var text;
+			//xmlDoc = $.parseXML( msg ),
+		    //$xml = $( xmlDoc ),
+			
+			
+			var messages = msg.documentElement.getElementsByTagName("message");
+			console.debug(messages[0]);
+			
+			
+			for(i = 0;i<messages.length;i++){
+				
+				from = messages[i].getElementsByTagName("from")[0].firstChild.nodeValue;
+				text = messages[i].getElementsByTagName("messageText")[0].firstChild.nodeValue;
+				date = messages[i].getElementsByTagName("date")[0].firstChild.nodeValue;
+				console.debug("from "+from);
+				console.debug("text "+text);
+				var mesgDiv = document.createElement("a");
+				mesgDiv.innerHTML ="<b class='userColor'>"+date+' - '+from+"</b>:  "+ text+"<br />";
+				console.debug(mesgDiv);
+				var abc = document.getElementById("messageCont");	
+					abc.appendChild(mesgDiv);
+				  var elem = $('#messageCont');
+				  elem.scrollTop(elem[0].scrollHeight);
+			}
+			
+		});
+	
+}
+updateChatBox = function(message,from,date){
+	console.debug("Updatecalled");
 	playSound(1);
 	var mesgDiv = document.createElement("a");
-	if(from!=userid){
-	mesgDiv.innerHTML ="<b class='userColor'>"+dateFormat()+' - '+from+"</b>:  "+ message+"<br />";
+	
+	mesgDiv.innerHTML ="<b class='userColor'>"+date+' - '+from+"</b>:  "+ message+"<br />";
+	console.debug(mesgDiv);
 	var abc = document.getElementById("messageCont");	
 		abc.appendChild(mesgDiv);
 	  var elem = $('#messageCont');
 	  elem.scrollTop(elem[0].scrollHeight);
-	}  
+	  
 };
-addSystemMessage = function(message){
+addSystemMessage = function(message,date){
 	playSound(1);
 	var mesgDiv = document.createElement("a");
-	mesgDiv.innerHTML ="<b class='system'>&laquo;"+dateFormat()+" - System &raquo;:  "+ message+"</b><br />";
+	mesgDiv.innerHTML ="<b class='system'>&laquo;"+date+" - System &raquo;:  "+ message+"</b><br />";
 	var abc = document.getElementById("messageCont");
 	abc.appendChild(mesgDiv);
 	var elem = $('#messageCont');
