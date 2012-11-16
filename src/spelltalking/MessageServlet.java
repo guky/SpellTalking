@@ -18,6 +18,7 @@ package spelltalking;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -58,6 +59,7 @@ public class MessageServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
   throws ServletException, IOException {
 	 SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss Z");
+	 fromat.setTimeZone(new SimpleTimeZone(2 * 60 * 60 * 1000, ""));
 	int action = new Integer(request.getParameter("action")).intValue();
 	switch(action){
 	case 1:UserService userService = UserServiceFactory.getUserService();

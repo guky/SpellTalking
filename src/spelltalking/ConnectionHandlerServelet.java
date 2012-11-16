@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.SimpleTimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +29,7 @@ public class ConnectionHandlerServelet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss Z");
+		fromat.setTimeZone(new SimpleTimeZone(2 * 60 * 60 * 1000, ""));
 		ChannelService channelService = ChannelServiceFactory
 				.getChannelService();
 		ChannelPresence presence = channelService.parsePresence(request);

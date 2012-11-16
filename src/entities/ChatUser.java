@@ -94,13 +94,16 @@ public class ChatUser {
 public static ChatUser getUserbyEmail(String Email) {
 	EntityManager em = EMF.get().createEntityManager();
 	Query query = em.createQuery("SELECT c FROM ChatUser c where Email = :email_id");
-	query.setParameter(1, Email);
+	query.setParameter("email_id", Email);
 	try{
 	
 	ChatUser results =  (ChatUser) query.getSingleResult();
 	
 	 return results;
-	} finally {
+	} catch(javax.persistence.NoResultException e){
+		return null;
+	}
+	finally {
 		em.close();
 	}
 		

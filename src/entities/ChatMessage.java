@@ -2,6 +2,7 @@ package entities;
 
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -87,8 +88,12 @@ public class ChatMessage {
 		try{
 		
 		List<ChatMessage> results = (List<ChatMessage>) query.getResultList();
+		List<ChatMessage> resortedList = (List<ChatMessage>)new LinkedList<ChatMessage>();
+		for(int i = results.size() -1;i >= 0;i-- ){
+			resortedList.add(results.get(i));
+		}
 		System.out.println("result size:" + results.size());
-		 return results;
+		 return resortedList;
 		} finally {
 			em.close();
 		}

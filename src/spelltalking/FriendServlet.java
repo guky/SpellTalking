@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SimpleTimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,7 +72,8 @@ public class FriendServlet extends HttpServlet {
 	  UserService userService = UserServiceFactory.getUserService();
 		User userAcc = userService.getCurrentUser();
 		SimpleDateFormat fromat = new SimpleDateFormat("ddMM - HH:mm:ss Z");
-	   
+		
+		fromat.setTimeZone(new SimpleTimeZone(2 * 60 * 60 * 1000, ""));
   	String user = userAcc.getEmail();
   	//ChatUser cUser = new ChatUser();
   	response.setContentType("text/xml");

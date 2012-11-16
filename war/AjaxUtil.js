@@ -81,7 +81,7 @@ openChannel = function(token) {
 
 onSocketError = function(error){
 	console.debug("Error is <br/>"+error.description+" <br /> and HTML code"+error.code);
-	addSystemMessage("Error: "+error.description+" Code: "+error.code);
+	addSystemMessage("Error: "+error.description+" Code: "+error.code,dateFormat());
 	var getTokenURI = '/gettoken?forced=true';
 	$.ajax({
 		  type: "POST",
@@ -95,16 +95,16 @@ onSocketError = function(error){
 };
 
 onSocketOpen = function() {
-	addSystemMessage("Socket is open");
+	addSystemMessage("Socket is open",dateFormat());
 	// socket opened
 };
 
 onSocketClose = function() {
-	addSystemMessage("Socket Connection closed");
+	addSystemMessage("Socket Connection closed",dateFormat());
 };
 
 onSocketMessage = function(message) {
-	
+	var date;
 	var messageXML =  ((new DOMParser()).parseFromString(message.data, "text/xml"));
 	
 	var messageType = messageXML.documentElement.getElementsByTagName("type")[0].firstChild.nodeValue;
@@ -112,10 +112,14 @@ onSocketMessage = function(message) {
 	if(messageType == "addToFriendList"){
 		addToFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
 	}else if(messageType == "updateChatBox"){
-		var friend = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;		
-		updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
+		var friend = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;	
+		 date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;
+		 console.debug("date "+date);
+		updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend,date);
 	}else if(messageType == "removeFromFriendList"){
-		removeFromFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
+		date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;
+		console.debug("date "+date);
+		removeFromFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,date);
 	}
 };
 
@@ -143,7 +147,7 @@ displayFriendList =function(){
 var friendsList= new Array();
 
 
-addToFriends = function(friend){
+addToFriends = function(friend,date){
 	//check if the user already added
 	console.debug("Friend add called");
 	var contains = false;
@@ -235,19 +239,19 @@ getHistory = function(){
 	var sendMessageURI = '/message?action=2';
 	$.ajax({
 		  type: "POST",
-		  url: sendMessageURI
+		  url: sendMessageURI,
 		//  data: { message: message}
-			
+		  dataType:"xml"
 		}).done(function( msg ) {
 			console.debug("Done History fetch");
-			msg
+			
 			console.debug(msg);
 			var from;
 			var text;
 			//xmlDoc = $.parseXML( msg ),
 		    //$xml = $( xmlDoc ),
 			
-			
+			//var messageXML =  ((new DOMParser()).parseFromString(msg.data, "text/xml"));
 			var messages = msg.documentElement.getElementsByTagName("message");
 			console.debug(messages[0]);
 			
