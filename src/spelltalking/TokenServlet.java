@@ -64,6 +64,7 @@ public class TokenServlet extends HttpServlet {
     	token = createChannel(user.getEmail());
     	chatUser = new ChatUser();
     	chatUser.setEmail(user.getEmail());
+    	chatUser.setColor("#66CCCC");
     	chatUser.setToken(token);
     	chatUser.setTokenDate(new Date());    	
     	chatUser.save();
@@ -74,7 +75,7 @@ public class TokenServlet extends HttpServlet {
     	System.out.println(new Date());
     	System.out.println((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60));
     	String forced = request.getParameter("forced");
-    	if((((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60)) > 2) || forced.equals("true")){
+    	if((((new Date().getTime() - chatUser.getTokenDate().getTime())/(1000*60*60)) > 22*60) || forced.equals("true")){
     		token = createChannel(user.getEmail());
     		chatUser.setToken(token);
     		chatUser.setTokenDate(new Date());
@@ -97,7 +98,7 @@ public class TokenServlet extends HttpServlet {
     try{
       logger.log(Level.INFO, "Creating a channel for {0}",userId);
       System.out.println("creating the channel");
-      return channelService.createChannel(userId);
+      return channelService.createChannel(userId,23*60);
     } catch(ChannelFailureException channelFailureException){
       logger.log(Level.WARNING, "Error creating the channel");
       System.out.println("Error creating the channel");

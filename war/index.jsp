@@ -17,7 +17,7 @@
 	<link type="text/css" rel="stylesheet" href="style.css" />
 	<!--<![endif]-->
 	<script language="javascript" type="text/javascript" src="tiny_mce/tiny_mce.js"></script>
-
+	<script language="javascript" type="text/javascript" src="settings.js"></script>
 	
   </head>
 

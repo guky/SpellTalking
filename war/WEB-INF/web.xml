@@ -46,6 +46,14 @@
        <url-pattern>/_ah/channel/connected/</url-pattern>
        <url-pattern>/_ah/channel/disconnected/ </url-pattern>
     </servlet-mapping>
+     <servlet>
+       <servlet-name>SettingsServlet</servlet-name>
+       <servlet-class>spelltalking.SettingsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+       <servlet-name>SettingsServlet</servlet-name>
+       <url-pattern>/settings/*</url-pattern>      
+    </servlet-mapping>
     	
  <servlet>
   <servlet-name>SystemServiceServlet</servlet-name>

@@ -62,7 +62,7 @@ public class FriendServlet extends HttpServlet {
 	/**
    * Logger to log all the updates and warnings
    */
-  private static final Logger logger = Logger.getLogger(FriendServlet.class.getCanonicalName());
+  private static final Logger logger = Logger.getLogger(FriendServlet.class.getName());
 	
 	/**
 	 * Accepts the userid from the user and updates it 
@@ -71,35 +71,35 @@ public class FriendServlet extends HttpServlet {
   throws ServletException, IOException {
 	  UserService userService = UserServiceFactory.getUserService();
 		User userAcc = userService.getCurrentUser();
-		SimpleDateFormat fromat = new SimpleDateFormat("ddMM - HH:mm:ss Z");
-		
+		SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss");		
 		fromat.setTimeZone(new SimpleTimeZone(2 * 60 * 60 * 1000, ""));
   	String user = userAcc.getEmail();
   	//ChatUser cUser = new ChatUser();
   	response.setContentType("text/xml");
   	String outputTxt =	"<data>\n" ;
+  	String friendName = "";
 
-  	
-
-  	
+ 
    
     logger.log(Level.INFO,"All the users list is written to the output and "+"the message about new user sent to all other users");
     List<ChatUser>friendList = ChatUser.getConnectedUsers();
     
   	//Add all the users logged in already to the new user friends list
     // and also update all of them about the new user
-  
+    System.out.println("friendList  "+friendList.size());
     for (ChatUser friend : friendList){    	
     	  System.out.println("Debug: user  "+friend.getEmail());
       if(!friend.getEmail().equals(user) && friend.isConnected()){
-        outputTxt +="<friend><name>" + friend.getEmail() +"</name></friend>\n";
-        channelService.sendMessage(
-  		  new ChannelMessage(friend.getEmail(),"<data>" +
-  			"<type>addToFriendList</type>" +  				  
-  			"<message>"+user+"</message>" +
-  			"<from>Server</from>" +
-  			"<date>"+fromat.format(new Date())+"</date>"+
-  				  "</data>"));
+    	 
+    	if(friend.getNickName() != null && !friend.getNickName().equals("")) {
+    		friendName = friend.getNickName();
+    	} else{
+    		friendName = friend.getEmail();
+    	}
+        outputTxt +="<friend><name>" + friendName +"</name><email>" +  friend.getEmail() +"</email><color>"+friend.getColor()+"</color></friend>\n";
+       
+  	  }else{
+  		
   	  }
     }
     outputTxt += "</data>\n";

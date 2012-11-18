@@ -33,6 +33,8 @@ public class ChatUser {
 	private Date TokenDate;	
 	private boolean Connected = false;
 	private String nickName;
+	private String color;
+	private int room;
 	public boolean isConnected() {		
 		return Connected;		
 	}
@@ -91,9 +93,61 @@ public class ChatUser {
 		}
 	}
 	
+public static boolean isNickNameUsed(String NickName) {
+		EntityManager em = EMF.get().createEntityManager();
+		Query query = em.createQuery("SELECT c FROM ChatUser c where nickName = :nickNameParam");
+		query.setParameter("nickNameParam", NickName);
+		try{
+		
+		ChatUser results =  (ChatUser) query.getSingleResult();
+
+		 return true;
+		} catch(javax.persistence.NoResultException e){
+			return false;
+		}
+		finally {
+			em.close();
+		}
+			
+		}	
+public String getColor() {
+	return color;
+}
+public void setColor(String color) {
+	this.color = color;
+}
+public int getRoom() {
+	return room;
+}
+public void setRoom(int room) {
+	this.room = room;
+}
+public String getId() {
+	return id;
+}
+public static boolean isColorUsed(String color) {
+	EntityManager em = EMF.get().createEntityManager();
+	Query query = em.createQuery("SELECT c FROM ChatUser c where color = :colorParam");
+	query.setParameter("colorParam", color);
+	try{
+	
+		ChatUser results =  (ChatUser) query.getSingleResult();	
+	 return true;
+	} catch(javax.persistence.NoResultException e){
+		if(color.compareToIgnoreCase("#CC9900") == 0){
+			return true;
+		}
+		return false;
+	}
+	finally {
+		em.close();
+	}
+		
+	}
 public static ChatUser getUserbyEmail(String Email) {
 	EntityManager em = EMF.get().createEntityManager();
 	Query query = em.createQuery("SELECT c FROM ChatUser c where Email = :email_id");
+	
 	query.setParameter("email_id", Email);
 	try{
 	

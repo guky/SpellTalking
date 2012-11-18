@@ -58,20 +58,30 @@ public class MessageServlet extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
   throws ServletException, IOException {
-	 SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss Z");
+	 SimpleDateFormat fromat = new SimpleDateFormat("dd.MM - HH:mm:ss");
 	 fromat.setTimeZone(new SimpleTimeZone(2 * 60 * 60 * 1000, ""));
 	int action = new Integer(request.getParameter("action")).intValue();
 	switch(action){
-	case 1:UserService userService = UserServiceFactory.getUserService();
+	case 1:
+	UserService userService = UserServiceFactory.getUserService();
 	User userAcc = userService.getCurrentUser();		    
     String message = request.getParameter("message");
     System.out.println("message got"+message);
    // String users[] = request.getParameter("to").split(":");
     String from = request.getParameter("from");
+    ChatUser chatUser = ChatUser.getUserbyEmail(from);
+    String color = "#66CCCC";
+    if(chatUser != null){
+    	if(chatUser.getNickName() != null && !chatUser.getNickName().equals("")){
+    		from = chatUser.getNickName();
+    		color = chatUser.getColor();
+    	}
+    }
 	ChatMessage	chatMessage = new ChatMessage();
-  	chatMessage.setEmail(userAcc.getEmail());
+  	chatMessage.setEmail(from);
   	chatMessage.setMessageText(new Text(message));
   	chatMessage.setMessageDate(new Date());
+  	chatMessage.setColor(color);
   	chatMessage.save();   
   	
     List<ChatUser> friendList = ChatUser.getConnectedUsers();
@@ -85,6 +95,7 @@ public class MessageServlet extends HttpServlet {
 		  "<message>"+message+"</message>" +
 		  "<from>"+from+"</from>" +
 		  "<date>"+fromat.format(new Date())+"</date>" +
+		  "<color>"+color+"</color>" +
 		  "</data>";       
         logger.log(Level.INFO,"sending message  into the channel");
         System.out.println("Sending message to "+user +" Message: " + outputMessage);
@@ -106,11 +117,11 @@ public class MessageServlet extends HttpServlet {
 	List<ChatMessage>chatMessageList = ChatMessage.getMessadges();
 	String responseText = "<data>";
 	for(ChatMessage cm : chatMessageList){
-		responseText +="<message>" +
-				  "<color>updateChatBox</color>" +
+		responseText +="<message>" +				 
 				  "<date>"+fromat.format(cm.getMessageDate())+"</date>" +
 				  "<messageText>"+cm.getMessageText().getValue()+"</messageText>" +
 				  "<from>"+cm.getEmail()+"</from>" +
+				  "<color>"+cm.getColor()+"</color>" +
 				  "</message>";
 		
 	}

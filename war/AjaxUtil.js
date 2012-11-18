@@ -106,20 +106,46 @@ onSocketClose = function() {
 onSocketMessage = function(message) {
 	var date;
 	var messageXML =  ((new DOMParser()).parseFromString(message.data, "text/xml"));
-	
+	var friend;
+	var from;
+	var nick;
+	var color;
 	var messageType = messageXML.documentElement.getElementsByTagName("type")[0].firstChild.nodeValue;
 	//console.debug(messageType);
 	if(messageType == "addToFriendList"){
-		addToFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue);
-	}else if(messageType == "updateChatBox"){
-		var friend = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;	
+		color = messageXML.documentElement.getElementsByTagName("color")[0].firstChild.nodeValue;
+		nick = messageXML.documentElement.getElementsByTagName("nick")[0].firstChild.nodeValue;
+		friend = messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue;
+		date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;	
+		addToFriends(friend,nick,date,color);
+		addSystemMessage(nick+" joined",date);
+	}else if(messageType == "nickNameChange"){
+		color = messageXML.documentElement.getElementsByTagName("color")[0].firstChild.nodeValue;
+		 nick = messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue ;	
+		 from = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;	
 		 date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;
 		 console.debug("date "+date);
-		updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend,date);
+		 changeNick(nick,from,date);
+	}else if(messageType == "colorChange"){		
+		 color = messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue ;	
+		 from = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;	
+		 date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;
+		 console.debug("date "+date);
+		 colorChange(color,from,date);
+	}else if(messageType == "updateChatBox"){	
+		
+		color = messageXML.documentElement.getElementsByTagName("color")[0].firstChild.nodeValue;
+		//alert(color); 
+		friend = messageXML.documentElement.getElementsByTagName("from")[0].firstChild.nodeValue ;	
+		 date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;
+		 console.debug("date "+date);
+		 updateChatBox(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,friend,date,color);
 	}else if(messageType == "removeFromFriendList"){
 		date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;
-		console.debug("date "+date);
-		removeFromFriends(messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue,date);
+		nick = messageXML.documentElement.getElementsByTagName("nick")[0].firstChild.nodeValue;
+		friend = messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue;
+		console.debug("date removeFromFriendList "+date);
+		removeFromFriends(friend,nick,date);
 	}
 };
 
@@ -134,7 +160,8 @@ displayFriendList =function(){
 		if (httpRequest.status === 200) {
 			var friendListXML = httpRequest.responseXML.getElementsByTagName("friend");
 			for( var i =0 ; i < friendListXML.length ; i++){
-				addToFriends(friendListXML[i].getElementsByTagName("name")[0].firstChild.nodeValue);
+				var color = friendListXML[i].getElementsByTagName("color")[0].firstChild.nodeValue
+				addToFriends(friendListXML[i].getElementsByTagName("email")[0].firstChild.nodeValue,friendListXML[i].getElementsByTagName("name")[0].firstChild.nodeValue,dateFormat(),color);
 			}
 			
 		}else {
@@ -147,7 +174,7 @@ displayFriendList =function(){
 var friendsList= new Array();
 
 
-addToFriends = function(friend,date){
+addToFriends = function(friend,nick,date,color){
 	//check if the user already added
 	console.debug("Friend add called");
 	var contains = false;
@@ -159,13 +186,13 @@ addToFriends = function(friend,date){
 	}
 	if(!contains){		
 		friendsList.push(friend);
-		var a = "<a id='"+friend+"'><b>"+friend+"</b></a>";
+		var a = "<a id='"+friend+"' style='color:"+color+"'><b>"+nick+"</b></a>";
 		var txt = document.createElement("div");
 		txt.innerHTML = a;
 		txt.style.cursor="pointer";
 		txt.setAttribute("onclick","openChat(\""+friend+"\");");
 		document.getElementById("FriendList").appendChild(txt);
-		addSystemMessage(friend+" joined");
+	
 		
 		
 
@@ -178,7 +205,8 @@ addToFriends = function(friend,date){
 		//recievers[recievers.lenght] = friend;
 	}
 };
-removeFromFriends = function(friend){
+
+removeFromFriends = function(friend,nick,date){
 	//check if the user already added
 	console.debug("Friend remove called");
 	var contains = false;
@@ -196,10 +224,28 @@ removeFromFriends = function(friend){
 		console.debug("index: "+index);
 		friendsList.splice(index,1);
 		document.getElementById("FriendList").removeChild(document.getElementById(friend).parentNode);
-		addSystemMessage(friend+" left");
+		addSystemMessage(nick+" left",date);
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
 		//recievers[recievers.lenght] = friend;
 	}
+};
+changeNick = function(nick,friend,date){
+	//check if the user already added
+		console.debug("Friend nick change called to :"+nick);
+		document.getElementById(friend).innerHTML = '<b>'+nick+'<b>'
+		addSystemMessage(friend+" changed name to "+nick,date);
+		//document.getElementById("chatMessagesPage").appendChild(chatBox);
+		//recievers[recievers.lenght] = friend;
+	
+};
+colorChange = function(color,friend,date){
+	//check if the user already added
+		console.debug("Friend color change called to :"+color);
+		document.getElementById(friend).style.color = color;
+		addSystemMessage(friend+" color changed",date);
+		//document.getElementById("chatMessagesPage").appendChild(chatBox);
+		//recievers[recievers.lenght] = friend;
+	
 };
 
 closeWindow = function(friend){
@@ -215,6 +261,12 @@ sendMessage = function(){
 	
 	//var message = tinyMCE.get('messageBox').getContent();
 	var message =  document.getElementById("messageBox").value;
+	message = message.replace(/^[ ]*/,'').replace(/^[\n]*/,'');
+	var re = /^[/]/;	
+	if(re.test(message)){
+		
+		commandParser(message);
+	}else{
 	console.debug(message);
 	message = message.split('<').join('lt').split('>').join('gt');
 	console.debug(message);
@@ -229,8 +281,9 @@ sendMessage = function(){
 		
 		});
 
+	
+	}	
 	document.getElementById("messageBox").value = '';
-		
 }
 getHistory = function(){
 	
@@ -257,14 +310,15 @@ getHistory = function(){
 			
 			
 			for(i = 0;i<messages.length;i++){
-				
+				color = messages[i].getElementsByTagName("color")[0].firstChild.nodeValue;
 				from = messages[i].getElementsByTagName("from")[0].firstChild.nodeValue;
 				text = messages[i].getElementsByTagName("messageText")[0].firstChild.nodeValue;
 				date = messages[i].getElementsByTagName("date")[0].firstChild.nodeValue;
+				console.debug("color "+color);
 				console.debug("from "+from);
 				console.debug("text "+text);
 				var mesgDiv = document.createElement("a");
-				mesgDiv.innerHTML ="<b class='userColor'>"+date+' - '+from+"</b>:  "+ text+"<br />";
+				mesgDiv.innerHTML ="<b class='userColor' style='color:"+color+"'>"+date+' - '+from+"</b>:  "+ text+"<br />";
 				console.debug(mesgDiv);
 				var abc = document.getElementById("messageCont");	
 					abc.appendChild(mesgDiv);
@@ -275,12 +329,12 @@ getHistory = function(){
 		});
 	
 }
-updateChatBox = function(message,from,date){
+updateChatBox = function(message,from,date,color){
 	console.debug("Updatecalled");
 	playSound(1);
 	var mesgDiv = document.createElement("a");
 	
-	mesgDiv.innerHTML ="<b class='userColor'>"+date+' - '+from+"</b>:  "+ message+"<br />";
+	mesgDiv.innerHTML ="<b class='userColor' style='color:"+color+"'>"+date+' - '+from+"</b>:  "+ message+"<br />";
 	console.debug(mesgDiv);
 	var abc = document.getElementById("messageCont");	
 		abc.appendChild(mesgDiv);
