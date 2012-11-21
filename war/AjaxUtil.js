@@ -1,12 +1,13 @@
 var userid;
 var recievers;
+var volume = 1;
 window.onload= init;
 var sound = new Audio("msg.wav");
 sound.setAttribute('type', 'audio/mp3');
 sound.preload = 'auto';
 sound.load();
 
-function playSound(volume) {
+function playSound() {
   var click=sound;
   click.volume = volume;
   click.play();
@@ -176,16 +177,15 @@ var friendsList= new Array();
 
 addToFriends = function(friend,nick,date,color){
 	//check if the user already added
-	console.debug("Friend add called");
-	var contains = false;
-	for(var i = 0 ; i < friendsList.length ; i++){
-		if(friendsList[i]==friend){
-			contains=true;
-			break;
-		}
+	var element =  document.getElementById(friend);
+	if (typeof(element) != 'undefined' && element != null)
+	{
+		contains = true;
+	}else{
+		contains = false;
 	}
-	if(!contains){		
-		friendsList.push(friend);
+	console.debug("Friend add called");
+	if(!contains){			
 		var a = "<a id='"+friend+"' style='color:"+color+"'><b>"+nick+"</b></a>";
 		var txt = document.createElement("div");
 		txt.innerHTML = a;
@@ -208,21 +208,15 @@ addToFriends = function(friend,nick,date,color){
 
 removeFromFriends = function(friend,nick,date){
 	//check if the user already added
-	console.debug("Friend remove called");
-	var contains = false;
-	var index = -1;
-	for(var i = 0 ; i < friendsList.length ; i++){
-		if(friendsList[i]==friend){
-			console.debug("friendsList["+i+"]: "+friendsList[i]);
-			contains=true;
-			break;
-		}
+	var element =  document.getElementById(friend);
+	if (typeof(element) != 'undefined' && element != null)
+	{
+		contains = true;
+	}else{
+		contains = false;
 	}
 	console.debug("contains: "+contains);
-	if(contains){
-		contains
-		console.debug("index: "+index);
-		friendsList.splice(index,1);
+	if(contains){		
 		document.getElementById("FriendList").removeChild(document.getElementById(friend).parentNode);
 		addSystemMessage(nick+" left",date);
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
@@ -270,7 +264,7 @@ sendMessage = function(){
 	console.debug(message);
 	message = message.split('<').join('lt').split('>').join('gt');
 	console.debug(message);
-	var sendMessageURI = '/message?action=1&message=' + message + '&to=test2@example.com' + '&from='+userid ;
+	var sendMessageURI = '/message?action=1&to=test2@example.com' + '&from='+userid ;
 	$.ajax({
 		  type: "POST",
 		  url: sendMessageURI,
@@ -294,7 +288,12 @@ getHistory = function(){
 		  type: "POST",
 		  url: sendMessageURI,
 		//  data: { message: message}
-		  dataType:"xml"
+		  
+		  error: function (xhr, ajaxOptions, thrownError) {
+		        alert(xhr.status);
+		        alert(thrownError);
+		        console.debug(thrownError);
+		      }
 		}).done(function( msg ) {
 			console.debug("Done History fetch");
 			
@@ -310,6 +309,7 @@ getHistory = function(){
 			
 			
 			for(i = 0;i<messages.length;i++){
+				//try{
 				color = messages[i].getElementsByTagName("color")[0].firstChild.nodeValue;
 				from = messages[i].getElementsByTagName("from")[0].firstChild.nodeValue;
 				text = messages[i].getElementsByTagName("messageText")[0].firstChild.nodeValue;
@@ -324,6 +324,9 @@ getHistory = function(){
 					abc.appendChild(mesgDiv);
 				  var elem = $('#messageCont');
 				  elem.scrollTop(elem[0].scrollHeight);
+				//}catch(err){
+					//addSystemMessage('Error in history message',dateFormat());
+				//}
 			}
 			
 		});
@@ -331,7 +334,7 @@ getHistory = function(){
 }
 updateChatBox = function(message,from,date,color){
 	console.debug("Updatecalled");
-	playSound(1);
+	playSound();
 	var mesgDiv = document.createElement("a");
 	
 	mesgDiv.innerHTML ="<b class='userColor' style='color:"+color+"'>"+date+' - '+from+"</b>:  "+ message+"<br />";
@@ -343,7 +346,7 @@ updateChatBox = function(message,from,date,color){
 	  
 };
 addSystemMessage = function(message,date){
-	playSound(1);
+	playSound();
 	var mesgDiv = document.createElement("a");
 	mesgDiv.innerHTML ="<b class='system'>&laquo;"+date+" - System &raquo;:  "+ message+"</b><br />";
 	var abc = document.getElementById("messageCont");

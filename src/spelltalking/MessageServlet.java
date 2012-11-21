@@ -64,12 +64,13 @@ public class MessageServlet extends HttpServlet {
 	switch(action){
 	case 1:
 	UserService userService = UserServiceFactory.getUserService();
-	User userAcc = userService.getCurrentUser();		    
+	User userAcc = userService.getCurrentUser();	
+
     String message = request.getParameter("message");
     System.out.println("message got"+message);
    // String users[] = request.getParameter("to").split(":");
     String from = request.getParameter("from");
-    ChatUser chatUser = ChatUser.getUserbyEmail(from);
+    ChatUser chatUser = ChatUser.getUserbyEmail(userAcc.getEmail());
     String color = "#66CCCC";
     if(chatUser != null){
     	if(chatUser.getNickName() != null && !chatUser.getNickName().equals("")){
@@ -92,7 +93,7 @@ public class MessageServlet extends HttpServlet {
       try{
       	String outputMessage ="<data>" +
 		  "<type>updateChatBox</type>" +
-		  "<message>"+message+"</message>" +
+		  "<message><![CDATA["+message+"]]></message>" +
 		  "<from>"+from+"</from>" +
 		  "<date>"+fromat.format(new Date())+"</date>" +
 		  "<color>"+color+"</color>" +
@@ -119,13 +120,17 @@ public class MessageServlet extends HttpServlet {
 	for(ChatMessage cm : chatMessageList){
 		responseText +="<message>" +				 
 				  "<date>"+fromat.format(cm.getMessageDate())+"</date>" +
-				  "<messageText>"+cm.getMessageText().getValue()+"</messageText>" +
+				  "<messageText><![CDATA["+cm.getMessageText().getValue()+"]]></messageText>" +
 				  "<from>"+cm.getEmail()+"</from>" +
 				  "<color>"+cm.getColor()+"</color>" +
 				  "</message>";
 		
 	}
 	responseText += "</data>";
+	
+	//response.setHeader("Content-Type", "text/xml; charset=iso-8859-5");
+	response.setContentType("text/xml");
+	response.setCharacterEncoding("UTF-8");
 	response.getWriter().print(responseText);
 	break;
 	}

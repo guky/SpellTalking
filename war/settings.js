@@ -28,6 +28,14 @@ commandParser = function(command){
 				addSystemMessage("Invalid color",dateFormat());
 			}
 			break;	
+		case 'volume': 
+			if(parseFloat(cmd[2]) >= 0 && parseFloat(cmd[2]) <= 1){
+				volume = parseFloat(cmd[2]);
+				addSystemMessage("Volume changed to "+volume,dateFormat());
+			}else{ 
+				addSystemMessage("Invalid volume",dateFormat());
+			}
+			break;	
 		default: addSystemMessage("Unknow argument: "+cmd[1],dateFormat()); break;	
 		}
 		break;	

@@ -79,6 +79,7 @@ public class TokenServlet extends HttpServlet {
     		token = createChannel(user.getEmail());
     		chatUser.setToken(token);
     		chatUser.setTokenDate(new Date());
+    		chatUser.save();
     		writeIntoChannel(response,token);
     		 System.out.println("Token done for "+user+" ReToken = " +token);
     	}else{    		
