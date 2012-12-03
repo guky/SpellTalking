@@ -1,6 +1,7 @@
 var userid;
 var recievers;
-var volume = 1;
+var volume = 50;
+var songList;
 window.onload= init;
 var sound = new Audio("msg.wav");
 sound.setAttribute('type', 'audio/mp3');
@@ -9,7 +10,7 @@ sound.load();
 
 function playSound() {
   var click=sound;
-  click.volume = volume;
+  click.volume = volume/100;
   click.play();
 }
 //general ajax function for all requests 
@@ -262,7 +263,7 @@ sendMessage = function(){
 		commandParser(message);
 	}else{
 	console.debug(message);
-	message = message.split('<').join('lt').split('>').join('gt');
+	//message = message.split('<').join('lt').split('>').join('gt');
 	console.debug(message);
 	var sendMessageURI = '/message?action=1&to=test2@example.com' + '&from='+userid ;
 	$.ajax({
@@ -379,3 +380,30 @@ function dateFormat(){
 	
 	
 }
+var controllPressed = false;
+function keyPressed(event){
+	if(event.keyCode == 13){
+		sendMessage();
+	}
+	if(event.keyCode == 39){
+		if(controllPressed){
+		playNext();
+		}
+	}
+	if(event.keyCode == 37){
+		if(controllPressed){
+		playPrev();
+		}
+	}
+	if(event.keyCode == 17){
+		controllPressed = true;		
+	}
+	
+}
+function keyReleased(event){
+	if(event.keyCode == 17){
+		controllPressed = false;		
+	}
+	
+}	
+	

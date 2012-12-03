@@ -1,0 +1,175 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <script type="text/javascript">
+      var CLIENT_ID = "253793305902-ugak2vbftdb3nl3d9ag738uu4is1k3me.apps.googleusercontent.com";
+      var SCOPES = 'https://www.googleapis.com/auth/drive';
+
+	function updatePermission(fileId, permissionId, newRole) {
+  // First retrieve the permission from the API.
+  console.debug("Permision started");
+  var request = gapi.client.drive.permissions.get({
+    'fileId': fileId,
+    'permissionId': permissionId
+  });
+  request.execute(function(resp) {
+    resp.role = newRole;
+    var updateRequest = gapi.client.drive.permissions.update({
+      'fileId': fileId,
+      'permissionId': permissionId,
+      'resource': resp
+    });
+    updateRequest.execute(function(resp) { });
+  });
+}
+      /**
+       * Called when the client library is loaded to start the auth flow.
+       */
+      function handleClientLoad() {
+        window.setTimeout(checkAuth, 1);
+      }
+
+      /**
+       * Check if the current user has authorized the application.
+       */
+      function checkAuth() {
+        gapi.auth.authorize(
+            {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},
+            handleAuthResult);
+      }
+
+      /**
+       * Called when authorization server replies.
+       *
+       * @param {Object} authResult Authorization result.
+       */
+      function handleAuthResult(authResult) {
+        var authButton = document.getElementById('authorizeButton');
+        var filePicker = document.getElementById('filePicker');
+		var fileList = document.getElementById('listfiles');
+        authButton.style.display = 'none';
+        filePicker.style.display = 'none';
+        if (authResult && !authResult.error) {
+          // Access token has been successfully retrieved, requests can be sent to the API.
+          filePicker.style.display = 'block';
+          filePicker.onchange = uploadFile;
+		  fileList.style.display = 'block';
+          fileList.onclick = retrieveAllFiles;
+		  
+        } else {
+          // No access token could be retrieved, show the button to start the authorization flow.
+          authButton.style.display = 'block';
+          authButton.onclick = function() {
+              gapi.auth.authorize(
+                  {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},
+                  handleAuthResult);
+          };
+        }
+      }
+
+      /**
+       * Start the file upload.
+       *
+       * @param {Object} evt Arguments from the file selector.
+       */
+      function uploadFile(evt) {
+        gapi.client.load('drive', 'v2', function() {
+          var file = evt.target.files[0];
+          insertFile(file);
+        });
+      }
+
+      /**
+       * Insert new file.
+       *
+       * @param {File} fileData File object to read data from.
+       * @param {Function} callback Function to call when the request is complete.
+       */
+      function insertFile(fileData, callback) {
+        const boundary = '-------314159265358979323846';
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const close_delim = "\r\n--" + boundary + "--";
+		
+        var reader = new FileReader();
+        reader.readAsBinaryString(fileData);
+        reader.onload = function(e) {
+          var contentType = fileData.type || 'application/octet-stream';
+          var metadata = {
+            'title': fileData.name,
+            'mimeType': contentType,
+			"parents":[{"id":"0Bw_KUKr1yYcZMmhTQlhGN2JsQkE","isRoot":false,"kind":"drive#parentReference"}],
+			"userPermission": {"id":"anyone","type": "anyone","kind": "drive#permission", "withLink": true}
+			
+          };
+
+          var base64Data = btoa(reader.result);
+          var multipartRequestBody =
+              delimiter +
+              'Content-Type: application/json\r\n\r\n' +
+              JSON.stringify(metadata) +
+              delimiter +
+              'Content-Type: ' + contentType + '\r\n' +
+              'Content-Transfer-Encoding: base64\r\n' +
+              '\r\n' +
+              base64Data +
+              close_delim;
+
+          var request = gapi.client.request({
+              'path': '/upload/drive/v2/files',
+              'method': 'POST',
+			  'params': {'uploadType': 'multipart'},
+              'headers': {
+                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+              },
+              'body': multipartRequestBody});
+          if (!callback) {
+            callback = function(file) {
+			var imageHandler = document.getElementById('images');
+			var DOM_img = document.createElement("img");
+			DOM_img.src = file.webContentLink;
+
+			imageHandler.appendChild(DOM_img);
+			 console.log(file)
+            };
+          }
+          request.execute(callback);
+        }
+      }
+	  function retrieveAllFiles(callback) {
+	  
+  var retrievePageOfFiles = function(request, result) {
+   
+    request.execute(function(resp) {
+      result = result.concat(resp.items);
+	  console.debug(result);
+      var nextPageToken = resp.nextPageToken;
+      if (nextPageToken) {
+        request = gapi.client.drive.files.list({
+          'pageToken': nextPageToken
+        });
+        retrievePageOfFiles(request, result);
+      } else {
+        callback(result);
+		
+      }
+    });
+  }
+ 
+  console.debug(gapi.client); 
+  var initialRequest = gapi.client.drive.files.list(); 
+	 
+  retrievePageOfFiles(initialRequest, []);
+
+}
+    </script>
+    <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+  </head>
+  <body>
+    <!--Add a file picker for the user to start the upload process -->
+    <input type="file" id="filePicker" style="display: none" />
+	<input type="button" id="listfiles" style="display: none" />
+    <input type="button" id="authorizeButton" style="display: none" value="Authorize" />
+	<button onclick="updatePermission('0Bw_KUKr1yYcZU0V1ZlhPdDdOTlU','me','reader')">Share</button>
+	<div id="images"></div>
+  </body>
+</html>

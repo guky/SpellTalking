@@ -2,7 +2,7 @@ commandParser = function(command){
 	
 	var cmd = command.substring(1);
 	cmd = cmd.split(" ");	
-	if(cmd.length == 3){
+	if(cmd.length > 1 || cmd[0]=="audio" || cmd[0]=="img"){
 		
 	switch(cmd[0]){
 	case 'set':
@@ -30,14 +30,41 @@ commandParser = function(command){
 			break;	
 		case 'volume': 
 			if(parseFloat(cmd[2]) >= 0 && parseFloat(cmd[2]) <= 1){
-				volume = parseFloat(cmd[2]);
+				volume = parseFloat(cmd[2])*100;
+				setCookie("volume",parseFloat(cmd[2])*100,10);
+				try{
+				soundManager.setVolume(current.pos.toString(),volume);
+				}catch(e){
+					
+				}
 				addSystemMessage("Volume changed to "+volume,dateFormat());
 			}else{ 
 				addSystemMessage("Invalid volume",dateFormat());
 			}
-			break;	
+			break;		
 		default: addSystemMessage("Unknow argument: "+cmd[1],dateFormat()); break;	
 		}
+		break;	
+	case 'audio':
+		console.debug("audio");
+		doLogin();
+		switch(cmd[1]){
+		case 'next': 
+			playNext();
+			break;	
+		case 'prev': 
+			playPrev();
+			break;	
+		case 'play': 
+			play();
+			break;			
+		}
+		break;
+	case 'img':
+		console.debug("img");
+		document.getElementById("messageBox").value = "<img scr='"+cmd[1]+"' />";		
+		sendMessage();
+		
 		break;	
 	default:addSystemMessage("Unknow command: "+cmd[0],dateFormat());	break;
 	}

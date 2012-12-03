@@ -1,0 +1,210 @@
+<html>
+<head>
+<script src="soundmanager/soundmanager2-nodebug-jsmin.js" >
+</script>
+
+</head>
+<body >
+<div id="vk_api_transport" style="position: absolute; top: -10000px;"></div>
+<script type="text/javascript">
+var songList;
+var volume = 50;
+var current = {"song":"","pos":0};
+      window.vkAsyncInit = function() {
+		 
+        VK.Observer.subscribe('auth.login', function(response) {		
+          loginOpenAPI();
+        });
+        VK.Observer.subscribe('auth.logout', function() {
+          console.log('logout');
+        });
+        VK.Observer.subscribe('auth.statusChange', function(response) {		 
+          console.log('statusChange');
+        });
+        VK.Observer.subscribe('auth.sessionChange', function(r) {
+          console.log('sessionChange');
+        });
+        VK.init({        	
+          apiId: 3271869		 
+        });	 
+        console.debug("initi done");
+      };
+ 
+      setTimeout(function() {
+        var el = document.createElement('script');
+        el.type = 'text/javascript';
+        el.src = 'http://vkontakte.ru/js/api/openapi.js?3';
+        el.async = true;
+        document.getElementById('vk_api_transport').appendChild(el);
+      }, 0);
+      
+      function doLogin() {    	
+    	  VK.Auth.getLoginStatus(function(response) {
+          if (response.session) {
+           
+          } else {
+             VK.Auth.login(
+    	    null,
+    	    VK.access.AUDIO 
+    	  );
+          }
+        });
+    	}
+		
+      function loginOpenAPI() {
+    	  getInitData();
+    	}
+      function getInitData() {
+    	  VK.Api.call('audio.get', {}, function(r) {
+          	  if(r.response) {
+          		songList = r.response;
+          		console.debug(r.response);
+          		//current.song = new Audio(r.response[0].url);
+          		current.pos = 0;
+          		//current.song.setAttribute('type', 'audio/mp3');
+          		//current.song.play();
+				
+				if(isCookieSet("volume")){
+				volume = getCookie("volume");
+				console.debug("From cookies "+volume);				
+				}else{
+				setCookie("volume",50,10);				
+				console.debug("From code "+volume);		
+				}
+							
+				soundManager.setup({
+					url: 'soundmanager/',
+					flashVersion: 9, // optional: shiny features (default = 8)
+					useFlashBlock: false, // optionally, enable when you're ready to dive in
+					debugMode: false,
+					
+					onready: function() {
+					console.debug("started sound creating");
+					var s = soundManager.createSound({
+					id: current.pos.toString(),			
+					url: r.response[0].url,
+					autoLoad: true
+					});
+					soundManager.play(current.pos.toString(),{onfinish:playNext});
+					
+					},
+					defaultOptions: {   
+					"volume": volume
+					},
+				});
+          	
+			
+        
+          	  }
+          	});
+    	}
+    	function playNext() {
+		var s;
+    		soundManager.stopAll();
+    		if(current.pos+1 == songList.length){
+			 s = soundManager.getSoundById('0');
+			if(s == null){
+			s = soundManager.createSound({
+					id: current.pos.toString(),			
+					url: songList[0].url,
+					autoLoad: true
+					});
+			}		
+    			current.pos = 0;
+    			console.debug("pos:"+current.pos); 
+						
+    		}else{
+    			current.pos = current.pos+1;
+    			console.debug("pos:"+current.pos);
+				 s = soundManager.getSoundById(current.pos);
+    		if(s == null){
+			s = soundManager.createSound({
+					id: current.pos.toString(),			
+					url: songList[current.pos].url,
+					autoLoad: true
+			});
+			}	
+			
+    		}
+    		s.setVolume(volume);
+			soundManager.play(current.pos.toString(),{onfinish:playNext});
+        	 
+        }
+    	
+    	function playPrev() {
+		var s;
+    		soundManager.stopAll();
+    		if(current.pos == 0){
+    			current.pos = songList.length-1;
+    			console.debug("pos:"+current.pos);   
+    			s = soundManager.getSoundById(current.pos.toString());
+				if(s == null){
+					s = soundManager.createSound({
+					id: current.pos.toString(),			
+					url: songList[current.pos].url,
+					autoLoad: true
+					});
+			}	
+    			
+    		}else{
+    			current.pos = current.pos-1;
+    			s = soundManager.getSoundById(current.pos.toString());
+				if(s == null){
+					s = soundManager.createSound({
+					id: current.pos.toString(),			
+					url: songList[current.pos].url,
+					autoLoad: true
+					});
+    			}
+    		}
+			s.setVolume(volume);
+			soundManager.play(current.pos.toString(),{onfinish:playNext});
+      }
+       	function play() {
+        	  soundManager.togglePause(current.pos.toString());
+        	  
+        }
+		function getCookie(c_name)
+		{
+		var i,x,y,ARRcookies=document.cookie.split(";");
+		for (i=0;i<ARRcookies.length;i++)
+		  {
+		  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+		  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+		  x=x.replace(/^\s+|\s+$/g,"");
+		  if (x==c_name)
+			{
+			return unescape(y);
+			}
+		  }
+		}
+
+		function setCookie(c_name,value,exdays)
+		{
+		var exdate=new Date();
+		exdate.setDate(exdate.getDate() + exdays);
+		var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+		document.cookie=c_name + "=" + c_value;
+		}
+
+		function isCookieSet(name)
+		{
+		var cookie=getCookie(name);
+		if (cookie!=null && cookie!="")
+		  {
+			return true;
+		  }
+		else 
+		  {
+			return false;
+		  }
+		}
+    	
+    </script>
+	<textarea id='messageBox' onkeydown="if(event.keyCode == 13){console.debug(event.keyCode)}"></textarea>
+    <div onclick="doLogin();">login</div>
+     <div onclick="play();">play</div>
+      <div onclick="playNext();">next</div>
+       <div onclick="playPrev();">prev</div>
+</body>
+</html>
