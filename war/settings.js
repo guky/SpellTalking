@@ -30,13 +30,7 @@ commandParser = function(command){
 			break;	
 		case 'volume': 
 			if(parseFloat(cmd[2]) >= 0 && parseFloat(cmd[2]) <= 1){
-				volume = parseFloat(cmd[2])*100;
-				setCookie("volume",parseFloat(cmd[2])*100,10);
-				try{
-				soundManager.setVolume(current.pos.toString(),volume);
-				}catch(e){
-					
-				}
+				SetVolume(parseFloat(cmd[2])*100);			
 				addSystemMessage("Volume changed to "+volume,dateFormat());
 			}else{ 
 				addSystemMessage("Invalid volume",dateFormat());

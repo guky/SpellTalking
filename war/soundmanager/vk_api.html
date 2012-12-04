@@ -25,7 +25,8 @@ var current = {"song":"","pos":0};
           console.log('sessionChange');
         });
         VK.init({        	
-          apiId: 3271869		 
+         // apiId: 3271869
+			apiId: 3268354		 
         });	 
         console.debug("initi done");
       };
@@ -39,16 +40,10 @@ var current = {"song":"","pos":0};
       }, 0);
       
       function doLogin() {    	
-    	  VK.Auth.getLoginStatus(function(response) {
-          if (response.session) {
-           
-          } else {
-             VK.Auth.login(
+    	   VK.Auth.login(
     	    null,
     	    VK.access.AUDIO 
     	  );
-          }
-        });
     	}
 		
       function loginOpenAPI() {

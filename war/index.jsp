@@ -29,6 +29,7 @@
       	<audio id="msg_sound" preload>
     	<source src="msg.wav" />
 		</audio>
+		<div id="AudioPlayer"></div>
 		<div id="vk_api_transport" style="position: absolute; top: -10000px;"></div>
 		<script type="text/javascript">
 
@@ -50,6 +51,7 @@ var current = {"song":"","pos":0};
         });
         VK.init({        	
           apiId: 3271869		 
+          //apiId:3268354
         });	 
         console.debug("initi done");
       };
