@@ -83,8 +83,9 @@ public class MessageServlet extends HttpServlet {
   	chatMessage.setMessageText(new Text(message));
   	chatMessage.setMessageDate(new Date());
   	chatMessage.setColor(color);
+  	if(!message.equals("") && !message.equals(" ")){
   	chatMessage.save();   
-  	
+  	}
     List<ChatUser> friendList = ChatUser.getConnectedUsers();
     for(ChatUser user : friendList){
     	

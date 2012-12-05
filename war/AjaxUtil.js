@@ -257,11 +257,13 @@ sendMessage = function(){
 	//var message = tinyMCE.get('messageBox').getContent();
 	var message =  document.getElementById("messageBox").value;
 	message = message.replace(/^[ ]*/,'').replace(/^[\n]*/,'');
-	var re = /^[/]/;	
-	if(re.test(message)){
-		
+	var re = /^[\/]/;	
+	if(re.test(message)){		
 		commandParser(message);
+		document.getElementById("messageBox").value = '';
+		return '';
 	}else{
+	if(message != '' || message != ''){			
 	console.debug(message);
 	//message = message.split('<').join('lt').split('>').join('gt');
 	console.debug(message);
@@ -277,7 +279,8 @@ sendMessage = function(){
 		});
 
 	
-	}	
+	}
+	}
 	document.getElementById("messageBox").value = '';
 }
 getHistory = function(){

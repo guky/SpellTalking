@@ -5,7 +5,10 @@ var volumeBar;
 var songDuration;
 var currentSong;
 var currentTitle;
-
+var songsLoaded;
+var playList;
+var audioPlayer;
+var randomize = false;
 function doLogin() {    	
     	  VK.Auth.getLoginStatus(function(response) {
           if (response.session) {
@@ -74,10 +77,12 @@ function doLogin() {
     		soundManager.stopAll();
     		if(current.pos+1 == songList.length){
 			    current.pos = 0;
+				current.pos = getPosition(current.pos);
     			playThis(songList[current.pos].aid.toString(),current.pos); 
 						
     		}else{
     			current.pos = current.pos+1;
+				current.pos = getPosition(current.pos);
     			playThis(songList[current.pos].aid.toString(),current.pos);
     		}
     		
@@ -90,10 +95,12 @@ function doLogin() {
     		soundManager.stopAll();
     		if(current.pos == 0){
     			current.pos = songList.length-1;
+				current.pos = getPosition(current.pos);
     			playThis(songList[current.pos].aid.toString(),current.pos);	
     			
     		}else{
     			current.pos = current.pos-1;
+				current.pos = getPosition(current.pos);
     			playThis(songList[current.pos].aid.toString(),current.pos);
     		}
 			
@@ -149,23 +156,31 @@ function doLogin() {
 	
 	 currentSong = document.createElement("div");
 	
-	 currentSong.setAttribute("id", "CurrentSong");	 	 
-	 currentSong.innerHTML ="<img src='soundmanager/play.png' class='playButton' id='playButtonCurrent' onclick='play()'/><img src='soundmanager/prev.png' class='prevButton' onclick='playPrev()'/><img src='soundmanager/next.png' class='nextButton' onclick='playNext()'/><div class='song'><div id='ProgressBar' onmousedown='setPosition(event)'><div id='songProgress' class='progess_front_line' ></div></div><div class='songTitle' id='songTitle'>"+songList[current.pos].title+"</div></div><div id='songDuration' class='duration'>"+getDuration(songList[current.pos].duration)+"</div><div id='soundControl'><div id='soundBar' onmousedown='SetVolumeBar(event)'><div id='volumeLine' class='progess_front_line'></div></div>";
+	 currentSong.setAttribute("id", "CurrentSong");	
+	currentSong.setAttribute('border-bottom', '1px solid black');
+	 currentSong.innerHTML ="<img src='soundmanager/play.png' class='playButton' id='playButtonCurrent' onclick='play()'/><img src='soundmanager/prev.png' class='prevButton' onclick='playPrev()'/><img src='soundmanager/next.png' class='nextButton' onclick='playNext()'/><div class='song'><div id='ProgressBar' ><div id='songProgress' class='progess_front_line' ></div></div><div class='songTitle' id='songTitle'>"+songList[current.pos].title+"</div></div><div id='songDuration' class='duration'>"+getDuration(songList[current.pos].duration)+"</div><div id='soundControl'><div id='soundBar'><div id='volumeLine' class='progess_front_line'></div></div></div><img src='soundmanager/shuffle.png' class='prevButton' id='randomizeButton' onclick='randomizePlay()'/>";
 	
-	var playList = document.createElement("div");
+	playList = document.createElement("div");
 	playList.setAttribute("id", "playList");
+	playList.setAttribute("onscroll", "loadMoreSongs(event)");
+	playList.style.display = 'block';
 	var songTextList = '';
-	for(var i = 0; i < songList.length;i++){
+	if(songList.length < 20){
+	songsLoaded = songList.length;
+	}else{
+	songsLoaded = 20;
+	}
+	for(var i = 0; i < songsLoaded;i++){
 		songTextList = songTextList+"<div id='"+songList[i].aid+"' class='playListSong'><img src='soundmanager/play.png' class='playButton' onclick='playThis("+songList[i].aid+","+i+")'/><div class='song'><div class='songTitle' >"+songList[i].title+"</div></div><div class='duration'>"+getDuration(songList[i].duration)+"</div></div>";
 	
 		}
 	playList.innerHTML = songTextList;	
-	var abc = document.getElementById("AudioPlayer");	
+	audioPlayer = document.getElementById("AudioPlayer");	
 	var clearElement = document.createElement("div");
 	clearElement.style.clear = 'both';
-		abc.appendChild(currentSong);
-		abc.appendChild(clearElement);
-		abc.appendChild(playList);
+		audioPlayer.appendChild(currentSong);
+		audioPlayer.appendChild(clearElement);
+		audioPlayer.appendChild(playList);
 		songProgressLine = document.getElementById("songProgress");
 		songProgressBar = document.getElementById("ProgressBar");
 		songDuration = document.getElementById("songDuration");
@@ -174,7 +189,21 @@ function doLogin() {
 		currentTitle = document.getElementById("songTitle");
 		
 		volumeLine.style.width = volume+"%";
-		abc.style.visibility ='visible';
+			$("#ProgressBar").click(function(e){
+				setPosition(e);
+			});
+			$("#soundBar").click(function(e){
+				SetVolumeBar(e);
+			});
+			$("#dragElement").mousedown(function(e){
+				$( "#AudioPlayer" ).draggable();
+				$( "#AudioPlayer" ).draggable("enable");
+				$( "#AudioPlayer" ).draggable({ appendTo: "body" });
+			});
+			$("#dragElement").mouseup(function(e){
+				$( "#AudioPlayer" ).draggable("disable");
+			});
+		//abc.style.visibility ='visible';
 	}
 	var getDuration= function(duration){
 		var durationMinStr = '';
@@ -206,8 +235,13 @@ function doLogin() {
 		var duration = ((songList[current.pos].duration*1000)-this.position)/1000;
 		songDuration.innerHTML = getDuration(Math.round(duration));
 	}
+	
+
+
 	var setPosition = function(event){
-		var x = event.offsetX;
+		console.debug(event);
+		var  x=event.clientX - event.target.offsetLeft - event.target.offsetParent.offsetLeft;
+		console.debug()
 		var progress = x/300;
 		console.debug(current.pos);
 		s = soundManager.getSoundById(songList[current.pos].aid.toString());
@@ -221,7 +255,7 @@ function doLogin() {
 		songProgressLine.style.width = width+"%";
 	}
 		var SetVolumeBar = function(event){
-		var x = event.offsetX;
+		var  x=event.clientX - event.target.offsetLeft - event.target.offsetParent.offsetLeft;
 		SetVolume(x*2);
 		//songProgressLine.setAttribute("style","width: "+width+"%; background-color: yellow;");
 		//console.debug(songProgressLine);
@@ -259,3 +293,81 @@ function doLogin() {
 		soundManager.play(songList[current.pos].aid.toString(),{"onfinish":playNext,"whileplaying":updateSongProgress});
 		
 	}
+var	loadMoreSongs = function(event){
+	console.debug(event);
+	console.debug(playList.scrollHeight);
+	console.debug(playList.clientHeight);
+	console.debug(playList.scrollHeight - playList.clientHeight);
+	console.debug(playList.scrollTop);
+	var proc = Math.round((playList.scrollTop/(playList.scrollHeight - playList.clientHeight))*100)
+	if(proc > 70){
+	if(songsLoaded < songList.length){
+		if((songList.length - songsLoaded) > 10){
+			
+			for(var i = 0; i < 10; i ++){
+				
+				var playListSong = document.createElement("div");
+				playListSong.setAttribute("class", "playListSong");
+				playListSong.setAttribute("id",songList[songsLoaded].aid );
+				playListSong.innerHTML="<img src='soundmanager/play.png' class='playButton' onclick='playThis("+songList[songsLoaded].aid+","+songsLoaded+")'/><div class='song'><div class='songTitle' >"+songList[songsLoaded].title+"</div></div><div class='duration'>"+getDuration(songList[songsLoaded].duration)+"</div>";
+				playList.appendChild(playListSong);
+				songsLoaded++;
+			}
+			
+		}else{
+		var countLeft = songList.length - songsLoaded;
+			for(var i = 0; i < countLeft; i ++){
+			var playListSong = document.createElement("div");
+				playListSong.setAttribute("class", "playListSong");
+				playListSong.setAttribute("id",songList[songsLoaded].aid );
+				playListSong.innerHTML="<img src='soundmanager/play.png' class='playButton' onclick='playThis("+songList[songsLoaded].aid+","+songsLoaded+")'/><div class='song'><div class='songTitle' >"+songList[songsLoaded].title+"</div></div><div class='duration'>"+getDuration(songList[songsLoaded].duration)+"</div>";
+				playList.appendChild(playListSong);
+				songsLoaded++;
+			
+			}
+			
+			
+		}
+	}
+	}
+}
+ 
+      //destroy the object when we are done
+      function _stop()
+      {
+        document.onmousemove = null;
+        document.onmouseup = null;
+		document.onselectstart = null;
+		document.body.style.cursor = 'auto';
+      }
+ 
+      //main functions which is responsible for moving the element (div in our example)
+ $(function() {
+        
+    });
+playlistShow = function(){
+	if(playList.style.display == 'none'){
+		playList.style.display = 'block';
+	}else{
+		playList.style.display = 'none';
+	}
+	}
+var	randomizePlay = function(){
+	if(randomize){
+	randomize = false;
+	document.getElementById('randomizeButton').style.opacity = 0.4;
+	}else{
+	randomize = true;
+	document.getElementById('randomizeButton').style.opacity = 1;
+	}
+}
+var getPosition = function(pos){
+	if(randomize){
+	return Math.floor(Math.random()*(songList.length-1))
+	}else{
+	return pos;
+	}
+	
+	
+
+}

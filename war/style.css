@@ -118,17 +118,17 @@ div{
   	border:none;
   }
  #AudioPlayer{
- 	width:470px;
- 	height:300px;
+ 	width:500px;
+ 	height:auto;
  	 border:none;
  	 background:#FFFFFF;
  	 position:absolute; 
  	 visibility:hidden;	 
  }
 
- #CurrentSong{
+#AudioPlayer #CurrentSong{
  	width:100%;
- 	height:50px; 	
+ 	height:auto; 	
  	 background:#ffffff;
  	
  	 border:0px;
@@ -181,7 +181,7 @@ div{
 }
 #soundControl{
 	float:left;
-	width:24px;
+	width:auto;
 	height:24px;
 	margin-top:3px;
 }
@@ -206,6 +206,18 @@ div{
 .playListSong{
 	width:100%;
 	height:27px;
+	
+	
+}
+#dragElement{
+	width:100%;
+	height:10px;
+	background:#D0D0D0;	
+	cursor:pointer;	
+}
+#randomizeButton{
+	margin-left:6px;
+	opacity:0.4;
 	
 	
 }

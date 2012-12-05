@@ -19,7 +19,7 @@
 	<script src="soundmanager/soundmanager2-nodebug-jsmin.js" ></script>
 	<script src="soundmanager/music_js.js" ></script>
 	<script language="javascript" type="text/javascript" src="settings.js"></script>
-	
+	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
   </head>
 
   <body onkeydown="keyPressed(event)" onkeyup="keyReleased(event)">
@@ -29,7 +29,7 @@
       	<audio id="msg_sound" preload>
     	<source src="msg.wav" />
 		</audio>
-		<div id="AudioPlayer"></div>
+		<div id="AudioPlayer"><div id='dragElement' ondblclick='playlistShow()'></div></div>
 		<div id="vk_api_transport" style="position: absolute; top: -10000px;"></div>
 		<script type="text/javascript">
 
@@ -50,8 +50,8 @@ var current = {"song":"","pos":0};
           console.log('sessionChange');
         });
         VK.init({        	
-          apiId: 3271869		 
-          //apiId:3268354
+         apiId: 3271869		 //spell talking
+         //apiId:3268354	//local host on port 8080
         });	 
         console.debug("initi done");
       };
@@ -86,7 +86,7 @@ var current = {"song":"","pos":0};
         </div>
       
       
-       <div style="font-weight:bold;"><textarea id='messageBox' onkeydown="keyPressed(event)" onkeyup="keyReleased(event)"></textarea></div>
+       <div style="font-weight:bold;"><textarea id='messageBox'></textarea></div>
       
     
     <%} %>

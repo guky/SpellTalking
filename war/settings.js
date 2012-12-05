@@ -45,6 +45,14 @@ commandParser = function(command){
 		switch(cmd[1]){
 		case 'next': 
 			playNext();
+			break;
+		case 'hide': 
+			var abc = document.getElementById("AudioPlayer");
+			abc.style.visibility ='hidden';
+			break;	
+		case 'show': 
+			var abc = document.getElementById("AudioPlayer");
+			abc.style.visibility ='visible';
 			break;	
 		case 'prev': 
 			playPrev();
@@ -56,7 +64,7 @@ commandParser = function(command){
 		break;
 	case 'img':
 		console.debug("img");
-		document.getElementById("messageBox").value = "<img scr='"+cmd[1]+"' />";		
+		document.getElementById("messageBox").value = "<img src='"+cmd[1]+"' style='width:"+cmd[2]+";height:"+cmd[3]+"'/>";		
 		sendMessage();
 		
 		break;	
