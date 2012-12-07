@@ -59,7 +59,11 @@ commandParser = function(command){
 			break;	
 		case 'play': 
 			play();
-			break;			
+			break;	
+		case 'drop':
+		var script = document.createElement("script"); 
+		script.src="http://gravityscript.googlecode.com/svn/trunk/gravityscript.js"; 
+		document.getElementById('AudioPlayer').appendChild(script);void(0);break;
 		}
 		break;
 	case 'img':
@@ -96,4 +100,28 @@ setColorName = function(color){
 			addSystemMessage(msg,dateFormat());		 
 		});
 }
-
+$(document).ready(function(){
+	console.debug('click handler');
+//	  $("#messageCont").click(function(event){
+//		  
+//		  console.debug(event.target.nodeName);
+//		  if(event.target.nodeName == 'IMG'){
+//			  console.debug(event.target.width);
+//			  console.debug(event.target.height);
+//		  if(event.target.height > 300 || event.target.width > 300){
+//			  console.debug((event.target.height*0.5));
+//			  console.debug((event.target.width*0.5));
+//			  event.target.height = (event.target.height*0.5);
+//			  event.target.width = (event.target.width*0.5);
+//		  }else{
+//			  console.debug((event.target.height*0.5));
+//			  console.debug((event.target.width*0.5));
+//			  event.target.height =  (event.target.height*1.5);
+//			  event.target.width =  (event.target.width*1.5) ;
+//		  }
+//		
+//		  }
+//	  });
+	  
+	
+});

@@ -50,8 +50,8 @@ var current = {"song":"","pos":0};
           console.log('sessionChange');
         });
         VK.init({        	
-         apiId: 3271869		 //spell talking
-         //apiId:3268354	//local host on port 8080
+        // apiId: 3271869		 //spell talking
+         apiId:3268354	//local host on port 8080
         });	 
         console.debug("initi done");
       };

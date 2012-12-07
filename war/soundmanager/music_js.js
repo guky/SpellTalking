@@ -171,7 +171,7 @@ function doLogin() {
 	songsLoaded = 20;
 	}
 	for(var i = 0; i < songsLoaded;i++){
-		songTextList = songTextList+"<div id='"+songList[i].aid+"' class='playListSong'><img src='soundmanager/play.png' class='playButton' onclick='playThis("+songList[i].aid+","+i+")'/><div class='song'><div class='songTitle' >"+songList[i].title+"</div></div><div class='duration'>"+getDuration(songList[i].duration)+"</div></div>";
+		songTextList = songTextList+"<div id='"+songList[i].aid+"' class='playListSong'><img src='soundmanager/play.png' class='playButton' onclick='playThis("+songList[i].aid+","+i+")'/><div class='song'><div class='songTitle' >"+songList[i].title+"</div></div><div class='duration'>"+getDuration(songList[i].duration)+"</div></div><a href='"+songList[i].url+"'>dl</a>";
 	
 		}
 	playList.innerHTML = songTextList;	
