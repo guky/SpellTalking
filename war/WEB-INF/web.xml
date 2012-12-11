@@ -76,4 +76,9 @@
 <role-name>*</role-name>
 </auth-constraint>
 </security-constraint>
+<security-constraint>
+   <web-resource-collection>
+      <url-pattern>/googlecb7d0dd574e6a9a2.html</url-pattern>
+   </web-resource-collection>
+</security-constraint>
 </web-app>

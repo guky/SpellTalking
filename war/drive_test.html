@@ -1,27 +1,28 @@
-<html>
+
+ <html>
   <head>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+        
     <script type="text/javascript">
-      var CLIENT_ID = "253793305902-ugak2vbftdb3nl3d9ag738uu4is1k3me.apps.googleusercontent.com";
-      var SCOPES = 'https://www.googleapis.com/auth/drive';
+        
 
-	function updatePermission(fileId, permissionId, newRole) {
-  // First retrieve the permission from the API.
-  console.debug("Permision started");
-  var request = gapi.client.drive.permissions.get({
-    'fileId': fileId,
-    'permissionId': permissionId
-  });
-  request.execute(function(resp) {
-    resp.role = newRole;
-    var updateRequest = gapi.client.drive.permissions.update({
-      'fileId': fileId,
-      'permissionId': permissionId,
-      'resource': resp
-    });
-    updateRequest.execute(function(resp) { });
-  });
-}
+      var CLIENT_ID = "253793305902-ugak2vbftdb3nl3d9ag738uu4is1k3me.apps.googleusercontent.com";
+      var SCOPES = 'https://www.googleapis.com/auth/drive.install';
+                var fileid = '';
+        function updatePermission(fileId, permissionId, newRole) {
+                gapi.load('drive-share', init);
+        
+
+                }
+                window.onload = function() {
+        gapi.load('drive-share', init);
+                }
+                   init = function() {
+        s = new gapi.drive.share.ShareClient('253793305902-aak66tlq8k0vmn7lrqdl5sljri1pdvlt.apps.googleusercontent.com');
+        s.setItemIds(["0Bw_KUKr1yYcZdHFVYTB2eG1IZk0"]);
+                s.showSettingsDialog();
+    }
       /**
        * Called when the client library is loaded to start the auth flow.
        */
@@ -34,7 +35,7 @@
        */
       function checkAuth() {
         gapi.auth.authorize(
-            {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},
+            {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': true},
             handleAuthResult);
       }
 
@@ -46,16 +47,16 @@
       function handleAuthResult(authResult) {
         var authButton = document.getElementById('authorizeButton');
         var filePicker = document.getElementById('filePicker');
-		var fileList = document.getElementById('listfiles');
+                var fileList = document.getElementById('listfiles');
         authButton.style.display = 'none';
         filePicker.style.display = 'none';
         if (authResult && !authResult.error) {
           // Access token has been successfully retrieved, requests can be sent to the API.
           filePicker.style.display = 'block';
           filePicker.onchange = uploadFile;
-		  fileList.style.display = 'block';
+                  fileList.style.display = 'block';
           fileList.onclick = retrieveAllFiles;
-		  
+                  
         } else {
           // No access token could be retrieved, show the button to start the authorization flow.
           authButton.style.display = 'block';
@@ -89,7 +90,7 @@
         const boundary = '-------314159265358979323846';
         const delimiter = "\r\n--" + boundary + "\r\n";
         const close_delim = "\r\n--" + boundary + "--";
-		
+                
         var reader = new FileReader();
         reader.readAsBinaryString(fileData);
         reader.onload = function(e) {
@@ -97,9 +98,9 @@
           var metadata = {
             'title': fileData.name,
             'mimeType': contentType,
-			"parents":[{"id":"0Bw_KUKr1yYcZMmhTQlhGN2JsQkE","isRoot":false,"kind":"drive#parentReference"}],
-			"userPermission": {"id":"anyone","type": "anyone","kind": "drive#permission", "withLink": true}
-			
+                        "parents":[{"id":"0Bw_KUKr1yYcZMmhTQlhGN2JsQkE","isRoot":false,"kind":"drive#parentReference"}],
+                        "userPermission": {"id":"anyone","type": "anyone","kind": "drive#permission", "withLink": true}
+                        
           };
 
           var base64Data = btoa(reader.result);
@@ -117,31 +118,32 @@
           var request = gapi.client.request({
               'path': '/upload/drive/v2/files',
               'method': 'POST',
-			  'params': {'uploadType': 'multipart'},
+                          'params': {'uploadType': 'multipart'},
               'headers': {
                 'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
               },
               'body': multipartRequestBody});
           if (!callback) {
             callback = function(file) {
-			var imageHandler = document.getElementById('images');
-			var DOM_img = document.createElement("img");
-			DOM_img.src = file.webContentLink;
+                        var imageHandler = document.getElementById('images');
+                        var DOM_img = document.createElement("img");
+                        DOM_img.src = file.webContentLink;
 
-			imageHandler.appendChild(DOM_img);
-			 console.log(file)
+                        imageHandler.appendChild(DOM_img);
+                         console.log(file);
+                         fileid = file.id;
             };
           }
           request.execute(callback);
         }
       }
-	  function retrieveAllFiles(callback) {
-	  
+          function retrieveAllFiles(callback) {
+          
   var retrievePageOfFiles = function(request, result) {
    
     request.execute(function(resp) {
       result = result.concat(resp.items);
-	  console.debug(result);
+          console.debug(result);
       var nextPageToken = resp.nextPageToken;
       if (nextPageToken) {
         request = gapi.client.drive.files.list({
@@ -150,14 +152,14 @@
         retrievePageOfFiles(request, result);
       } else {
         callback(result);
-		
+                
       }
     });
   }
  
   console.debug(gapi.client); 
   var initialRequest = gapi.client.drive.files.list(); 
-	 
+         
   retrievePageOfFiles(initialRequest, []);
 
 }
@@ -167,9 +169,9 @@
   <body>
     <!--Add a file picker for the user to start the upload process -->
     <input type="file" id="filePicker" style="display: none" />
-	<input type="button" id="listfiles" style="display: none" />
+        <input type="button" id="listfiles" style="display: none" />
     <input type="button" id="authorizeButton" style="display: none" value="Authorize" />
-	<button onclick="updatePermission('0Bw_KUKr1yYcZU0V1ZlhPdDdOTlU','me','reader')">Share</button>
-	<div id="images"></div>
+        <button onclick="updatePermission('0Bw_KUKr1yYcZU0V1ZlhPdDdOTlU','me','reader')">Share</button>
+        <div id="images"></div>
   </body>
 </html>

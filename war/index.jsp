@@ -8,6 +8,7 @@
 <%@ page import ="com.google.appengine.api.users.User,com.google.appengine.api.users.UserService,com.google.appengine.api.users.UserServiceFactory" %>
 <html>
   <head>
+  	<meta name="google-site-verification" content="BwIvRYpx5AVdgWCmt7NyJPX04I9IPrLFHZjZRRDW0OI" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Hello App Engine</title>
     <script src='/_ah/channel/jsapi'></script>
@@ -50,8 +51,8 @@ var current = {"song":"","pos":0};
           console.log('sessionChange');
         });
         VK.init({        	
-        // apiId: 3271869		 //spell talking
-         apiId:3268354	//local host on port 8080
+         apiId: 3271869		 //spell talking
+        // apiId:3268354	//local host on port 8080
         });	 
         console.debug("initi done");
       };
