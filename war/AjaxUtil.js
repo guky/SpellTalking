@@ -2,6 +2,7 @@ var userid;
 var recievers;
 var volume = 50;
 var songList;
+var interval = null;
 window.onload= init;
 var sound = new Audio("msg.wav");
 sound.setAttribute('type', 'audio/mp3');
@@ -72,6 +73,8 @@ requestToken = function(){
 };
 
 openChannel = function(token) {
+	window.clearInterval(interval);
+	interval= null;
 	console.debug("Open Channel started");
 	var channel = new goog.appengine.Channel(token);
 	var socket = channel.open();
@@ -79,11 +82,17 @@ openChannel = function(token) {
 	socket.onmessage = onSocketMessage;
 	socket.onerror = onSocketError;
 	socket.onclose = onSocketClose;
+	
 };
 
 onSocketError = function(error){
+	if(interval == null){
+	interval = self.setInterval(function() {
+		requestToken();
+	}, 5000);
+	}
 	console.debug("Error is <br/>"+error.description+" <br /> and HTML code"+error.code);
-	addSystemMessage("Error: "+error.description+" Code: "+error.code,dateFormat());
+	addSystemMessage("Error: "+error.description+" Code: "+error.code,dateFormat(),true);
 	var getTokenURI = '/gettoken?forced=true';
 	$.ajax({
 		  type: "POST",
@@ -94,15 +103,16 @@ onSocketError = function(error){
 			//console.debug(msg);
 		  openChannel(msg);		 
 		});
+	
 };
 
 onSocketOpen = function() {
-	addSystemMessage("Socket is open",dateFormat());
+	addSystemMessage("Socket is open",dateFormat(),true);
 	// socket opened
 };
 
 onSocketClose = function() {
-	addSystemMessage("Socket Connection closed",dateFormat());
+	addSystemMessage("Socket Connection closed",dateFormat(),true);
 };
 
 onSocketMessage = function(message) {
@@ -120,7 +130,7 @@ onSocketMessage = function(message) {
 		friend = messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue;
 		date = messageXML.documentElement.getElementsByTagName("date")[0].firstChild.nodeValue;	
 		addToFriends(friend,nick,date,color);
-		addSystemMessage(nick+" joined",date);
+		
 	}else if(messageType == "nickNameChange"){
 		color = messageXML.documentElement.getElementsByTagName("color")[0].firstChild.nodeValue;
 		 nick = messageXML.documentElement.getElementsByTagName("message")[0].firstChild.nodeValue ;	
@@ -154,7 +164,8 @@ onSocketMessage = function(message) {
 
 displayFriendList =function(){
 	console.debug("List requested");
-	var txt = document.createElement("div");		
+	var txt = document.createElement("div");
+	document.getElementById("FriendList").innerHTML = '';
 	document.getElementById("FriendList").appendChild(txt);	
 	var getFriendListURI = 'getFriendList?userid='+ userid;
 	var httpRequest = makeRequest(getFriendListURI,false);
@@ -193,7 +204,7 @@ addToFriends = function(friend,nick,date,color){
 		txt.style.cursor="pointer";
 		txt.setAttribute("onclick","openChat(\""+friend+"\");");
 		document.getElementById("FriendList").appendChild(txt);
-	
+		addSystemMessage(nick+" joined",date,false);
 		
 		
 
@@ -219,7 +230,7 @@ removeFromFriends = function(friend,nick,date){
 	console.debug("contains: "+contains);
 	if(contains){		
 		document.getElementById("FriendList").removeChild(document.getElementById(friend).parentNode);
-		addSystemMessage(nick+" left",date);
+		addSystemMessage(nick+" left",date,false);
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
 		//recievers[recievers.lenght] = friend;
 	}
@@ -228,7 +239,7 @@ changeNick = function(nick,friend,date){
 	//check if the user already added
 		console.debug("Friend nick change called to :"+nick);
 		document.getElementById(friend).innerHTML = '<b>'+nick+'<b>'
-		addSystemMessage(friend+" changed name to "+nick,date);
+		addSystemMessage(friend+" changed name to "+nick,date,true);
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
 		//recievers[recievers.lenght] = friend;
 	
@@ -237,7 +248,7 @@ colorChange = function(color,friend,date){
 	//check if the user already added
 		console.debug("Friend color change called to :"+color);
 		document.getElementById(friend).style.color = color;
-		addSystemMessage(friend+" color changed",date);
+		addSystemMessage(friend+" color changed",date,true);
 		//document.getElementById("chatMessagesPage").appendChild(chatBox);
 		//recievers[recievers.lenght] = friend;
 	
@@ -349,8 +360,11 @@ updateChatBox = function(message,from,date,color){
 	  elem.scrollTop(elem[0].scrollHeight);
 	  
 };
-addSystemMessage = function(message,date){
-	playSound();
+addSystemMessage = function(message,date,sound){
+	if(sound){
+		playSound();
+	}
+	
 	var mesgDiv = document.createElement("a");
 	mesgDiv.innerHTML ="<b class='system'>&laquo;"+date+" - System &raquo;:  "+ message+"</b><br />";
 	var abc = document.getElementById("messageCont");
@@ -390,12 +404,18 @@ function keyPressed(event){
 	}
 	if(event.keyCode == 39){
 		if(controllPressed){
-		playNext();
+			if(audioWindow!=null){
+				audioWindow.playNext();			
+			}
+			
 		}
 	}
 	if(event.keyCode == 37){
 		if(controllPressed){
-		playPrev();
+			if(audioWindow!=null){
+				audioWindow.playPrev();		
+			}
+		
 		}
 	}
 	if(event.keyCode == 17){

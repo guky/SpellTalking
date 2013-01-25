@@ -132,7 +132,7 @@ div{
  	 background:#ffffff;
  	
  	 border:0px;
- 	 border-bottom:1px solod #000000;
+
  	 margin:2px 0px 0px 0px;
  }
   .duration{
@@ -150,7 +150,8 @@ div{
 	height:5px;
 	background:#D0D0D0;
 	cursor:pointer;
-	
+    position:absolute;
+
 }
 .song{
 	width:303px;
@@ -160,6 +161,7 @@ div{
 	margin-top:3px;
 }
 .songTitle{
+    margin-top:5px;
 	font-size:10px;
 	color:#000000;
 	
@@ -220,4 +222,24 @@ div{
 	opacity:0.4;
 	
 	
+}
+.ui-slider-range-min{
+    height:5px;
+    background:#000000;
+}
+.ui-slider-handle{
+    position: absolute;
+    height: 5px;
+    top:-1px;
+    width:5px;
+    border:solid 1px #000000;
+    background: #FFFFFF;
+    z-index: 2;
+    cursor: default;
+}
+#tabs-2{
+	height:246px;
+}
+#ui_holder{
+	height:24px
 }

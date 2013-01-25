@@ -1,3 +1,4 @@
+var audioWindow = null;
 commandParser = function(command){
 	
 	var cmd = command.substring(1);
@@ -41,29 +42,41 @@ commandParser = function(command){
 		break;	
 	case 'audio':
 		console.debug("audio");
-		doLogin();
+		
 		switch(cmd[1]){
-		case 'next': 
-			playNext();
+		case 'next':
+			if(audioWindow!=null){
+				audioWindow.playNext();				
+			}
+			
 			break;
 		case 'hide': 
-			var abc = document.getElementById("AudioPlayer");
-			abc.style.visibility ='hidden';
+			if(audioWindow!=null){				
+				var abc = audioWindow.document.getElementById("AudioPlayer");
+				abc.style.visibility ='hidden'
+			}
 			break;	
 		case 'show': 
-			var abc = document.getElementById("AudioPlayer");
-			abc.style.visibility ='visible';
+			//var abc = document.getElementById("AudioPlayer");
+			//abc.style.visibility ='visible';
+			
+			audioWindow = window.open("http://spelltalking.appspot.com/audio",'Music',
+						   'width=501,height=275,menubar=no,status=no,location=no,toolbar=no,scrollbars=no');
 			break;	
 		case 'prev': 
-			playPrev();
+			if(audioWindow!=null){
+				audioWindow.playPrev();				
+			}			
 			break;	
 		case 'play': 
-			play();
+			if(audioWindow!=null){
+				audioWindow.play();				
+			}			
 			break;	
-		case 'drop':
-		var script = document.createElement("script"); 
-		script.src="http://gravityscript.googlecode.com/svn/trunk/gravityscript.js"; 
-		document.getElementById('AudioPlayer').appendChild(script);void(0);break;
+//		case 'drop':
+//		var script = document.createElement("script"); 
+//		script.src="http://gravityscript.googlecode.com/svn/trunk/gravityscript.js"; 
+//		document.getElementById('AudioPlayer').appendChild(script);void(0);break;
 		}
 		break;
 	case 'img':

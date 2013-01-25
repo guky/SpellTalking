@@ -11,7 +11,14 @@
 		<servlet-name>TokenServlet</servlet-name>
 		<url-pattern>/gettoken</url-pattern>
 	</servlet-mapping>
-	
+	<servlet>
+		<servlet-name>AwayHandler</servlet-name>
+		<servlet-class>spelltalking.AwayHandlerServelet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AwayHandler</servlet-name>
+		<url-pattern>/away</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>SpellTalking</servlet-name>
 		<url-pattern>/spelltalking</url-pattern>
@@ -20,6 +27,14 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 	
+	<servlet>
+       <servlet-name>VkAudioServlet</servlet-name>
+       <servlet-class>spelltalking.VkAudioServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+       <servlet-name>VkAudioServlet</servlet-name>
+       <url-pattern>/audio/*</url-pattern>
+    </servlet-mapping>
 	<servlet>
        <servlet-name>MessageServlet</servlet-name>
        <servlet-class>spelltalking.MessageServlet</servlet-class>
@@ -75,10 +90,5 @@
 <auth-constraint>
 <role-name>*</role-name>
 </auth-constraint>
-</security-constraint>
-<security-constraint>
-   <web-resource-collection>
-      <url-pattern>/googlecb7d0dd574e6a9a2.html</url-pattern>
-   </web-resource-collection>
 </security-constraint>
 </web-app>

@@ -18,7 +18,7 @@
 	<link type="text/css" rel="stylesheet" href="style.css" />
 	<!--<![endif]-->
 	<script src="soundmanager/soundmanager2-nodebug-jsmin.js" ></script>
-	<script src="soundmanager/music_js.js" ></script>
+	
 	<script language="javascript" type="text/javascript" src="settings.js"></script>
 	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
   </head>
@@ -30,43 +30,6 @@
       	<audio id="msg_sound" preload>
     	<source src="msg.wav" />
 		</audio>
-		<div id="AudioPlayer"><div id='dragElement' ondblclick='playlistShow()'></div></div>
-		<div id="vk_api_transport" style="position: absolute; top: -10000px;"></div>
-		<script type="text/javascript">
-
-
-var current = {"song":"","pos":0};
-           window.vkAsyncInit = function() {
-		 
-        VK.Observer.subscribe('auth.login', function(response) {		
-          loginOpenAPI();
-        });
-        VK.Observer.subscribe('auth.logout', function() {
-          console.log('logout');
-        });
-        VK.Observer.subscribe('auth.statusChange', function(response) {		 
-          console.log('statusChange');
-        });
-        VK.Observer.subscribe('auth.sessionChange', function(r) {
-          console.log('sessionChange');
-        });
-        VK.init({        	
-         apiId: 3271869		 //spell talking
-        // apiId:3268354	//local host on port 8080
-        });	 
-        console.debug("initi done");
-      };
- 
-      setTimeout(function() {
-        var el = document.createElement('script');
-        el.type = 'text/javascript';
-        el.src = 'http://vkontakte.ru/js/api/openapi.js?3';
-        el.async = true;
-        document.getElementById('vk_api_transport').appendChild(el);
-      }, 0);
-      
-     
-    	</script>
         <div id ='FriendList'><div></div></div>
         <div id = "messageCont"><div></div>
             <h1>Hello App Engine!</h1>
