@@ -183,13 +183,14 @@ div{
 }
 #soundControl{
 	float:left;
-	width:auto;
+	width:5px;
 	height:24px;
 	margin-top:3px;
 }
 #soundBar{	
-	width:50px;
-	height:5px;
+	position:absolute;
+	width:5px;
+	height:24px;
 	background:#D0D0D0;
 	cursor:pointer;
 }

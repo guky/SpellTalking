@@ -5,7 +5,8 @@
 	<link type="text/css" rel="stylesheet" href="jquery-ui-1.10.0.custom.min.css" />
 	<link type="text/css" rel="stylesheet" href="style.css" />
 	<link type="text/css" rel="stylesheet" href="jquery.jui_dropdown.css" />
-	
+	<!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />-->
+  
 	<script src="soundmanager/soundmanager2-nodebug-jsmin.js" ></script>
 	<script src="soundmanager/music_js.js" ></script>
 	<script language="javascript" type="text/javascript" src="settings.js"></script>
@@ -14,32 +15,7 @@
 	<script src="jquery.jui_dropdown.min.js"></script>
 	
 </script>
-<script>
-  $(function() {
-    $( "#tabs" ).tabs({
-      beforeLoad: function( event, ui ) {
-        ui.jqXHR.error(function() {
-          ui.panel.html(
-            "Couldn't load this tab. We'll try to fix this as soon as possible. " +
-            "If this wouldn't be a demo." );
-        });
-      }
-    });
-	 // demo dropdown 1 ---------------------------------------------------------
-    $("#demo_drop1").jui_dropdown({
-        launcher_id: 'launcher1',
-        launcher_container_id: 'launcher1_container',
-        menu_id: 'menu1',
-        containerClass: 'container1',
-        menuClass: 'menu1',
-        onSelect: function(event, data) {
-            $("#launcher1").text ('index: ' + data.index + ' (id: ' + data.id + ')');
-        }
-    });
-  });
- 
 
-  </script>
 </head>
 <body >
 

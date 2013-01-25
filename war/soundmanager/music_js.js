@@ -10,6 +10,7 @@ var playList;
 var audioPlayer;
 var randomize = false;
 var allowUpdate = true;
+
 function doLogin() {    	
     	  VK.Auth.getLoginStatus(function(response) {
           if (response.session) {
@@ -168,7 +169,7 @@ function doLogin() {
          "<div class='songTitle' id='songTitle'>"+songList[current.pos].title+"</div></div>" +
          "<div id='songDuration' class='duration'>"+getDuration(songList[current.pos].duration)+"</div>" +
          "<div id='soundControl'><div id='soundBar'>" +
-         "<div id='volumeLine' class='progess_front_line'></div></div>" +
+         "</div>" +
          "</div><img src='soundmanager/shuffle.png' class='prevButton' id='randomizeButton' onclick='randomizePlay()'/>";
 		 
 	playList = document.createElement("div");
@@ -200,7 +201,7 @@ function doLogin() {
 	    volumeBar = document.getElementById("soundBar");
 		currentTitle = document.getElementById("songTitle");
 		
-		volumeLine.style.width = volume+"%";
+		//volumeLine.style.width = volume+"%";
 		    $( "#ProgressBar" ).slider({
             orientation: "horizontal",
             range: "min",
@@ -219,12 +220,23 @@ function doLogin() {
 				songDuration.innerHTML = getDuration(Math.round(duration));
             }
         });
+		   $( "#soundBar" ).slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 0,			
+			slide: function( event, ui ) {
+               SetVolumeBar(ui.value);
+            }
+        });
 			//$("#ProgressBar").click(function(e){
 			//	setPosition(e);
 			//});
-			$("#soundBar").click(function(e){
-				SetVolumeBar(e);
-			});
+			//$("#soundBar").click(function(e){
+			//	SetVolumeBar(e);
+			//});
+			
 			$("#dragElement").mousedown(function(e){
 				$( "#AudioPlayer" ).draggable();
 				$( "#AudioPlayer" ).draggable("enable");
@@ -284,9 +296,9 @@ function doLogin() {
 		//console.debug(songProgressLine);
 		//songProgressLine.style.width = width+"%";
 	}
-		var SetVolumeBar = function(event){
-		var  x=event.clientX - event.target.offsetLeft - event.target.offsetParent.offsetLeft;
-		SetVolume(x*2);
+		var SetVolumeBar = function(volume){
+		
+		SetVolume(volume);
 		//songProgressLine.setAttribute("style","width: "+width+"%; background-color: yellow;");
 		//console.debug(songProgressLine);
 		
@@ -403,6 +415,27 @@ var getPosition = function(pos){
 	
 
 }
-
+$(function() {
+    $( "#tabs" ).tabs({
+      beforeLoad: function( event, ui ) {
+        ui.jqXHR.error(function() {
+          ui.panel.html(
+            "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+            "If this wouldn't be a demo." );
+        });
+      }
+    });
+	 // demo dropdown 1 ---------------------------------------------------------
+    $("#demo_drop1").jui_dropdown({
+        launcher_id: 'launcher1',
+        launcher_container_id: 'launcher1_container',
+        menu_id: 'menu1',
+        containerClass: 'container1',
+        menuClass: 'menu1',
+        onSelect: function(event, data) {
+            $("#launcher1").text ('index: ' + data.index + ' (id: ' + data.id + ')');
+        }
+    });
+  });
       
     
